@@ -76,6 +76,7 @@
   }
   #dot{width:9px;height:9px;border-radius:50%;background:#e8b64c;flex:none}
   #dot.live{background:#7ddfa8}
+  #langBtn{margin-left:auto;cursor:pointer;min-height:44px}
 
   .card{
     background:rgba(244,242,238,.6);
@@ -162,12 +163,6 @@
   /* rules */
   .rules{font-size:.92rem;color:var(--ink-soft);line-height:1.65}
   .rules b{color:var(--ink)}
-  .lang-toggle{
-    cursor:pointer;font-family:var(--sans);font-weight:600;font-size:.74rem;
-    color:var(--ink);background:rgba(255,255,255,.6);
-    border:1px solid rgba(43,42,40,.18);border-radius:999px;
-    padding:8px 16px;min-height:44px;
-  }
   .stake{margin-top:12px;padding:12px 15px;border-radius:13px;background:rgba(31,58,90,.08);border:1px solid rgba(31,58,90,.25);color:var(--shadow);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
   .truth{margin-top:12px;font-size:.84rem;color:var(--ink-faint);line-height:1.6}
 
@@ -198,35 +193,36 @@
     <div class="eyebrow">Pomona · Jul 18 → Aug 7</div>
     <h1>Waist <em>Management</em></h1>
     <div class="dates">
-      <span class="pill">% bodyweight lost wins</span>
+      <span class="pill" data-i18n="pctWins">% bodyweight lost wins</span>
       <span class="pill" id="countdown">— days left</span>
       <span class="pill" aria-label="Sync status" id="syncPill"><span id="dot"></span></span>
+      <button type="button" class="pill" id="langBtn">বাংলা</button>
     </div>
   </header>
 
   <section class="card">
-    <h2>Leaderboard <span class="h2sub">most % lost since day one</span></h2>
+    <h2><span data-i18n="leaderboard">Leaderboard</span> <span class="h2sub" data-i18n="leaderboardSub">most % lost since day one</span></h2>
     <div class="board" id="board"></div>
   </section>
 
   <section class="card">
-    <h2>Log weight</h2>
+    <h2 data-i18n="logWeight">Log weight</h2>
     <div class="form">
       <div class="who-pills" role="radiogroup" aria-label="Who" style="grid-column:1/-1"><button type="button" class="wp" data-who="jameel">Jameel</button><button type="button" class="wp" data-who="hibbu">Hibbu</button><button type="button" class="wp" data-who="mom">Mom</button></div>
       <input type="date" id="when" aria-label="Date" style="grid-column:1/-1">
-      <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" aria-label="Weight in pounds" style="grid-column:1/-1">
-      <button class="add" id="add">Log it</button>
+      <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" data-i18n-ph="weightLb" aria-label="Weight in pounds" style="grid-column:1/-1">
+      <button class="add" id="add" data-i18n="logIt">Log it</button>
       <div class="msg" id="msg" aria-live="polite"></div>
     </div>
   </section>
 
   <section class="card">
-    <h2>History</h2>
+    <h2 data-i18n="history">History</h2>
     <div class="log" id="log"></div>
   </section>
 
   <section class="card">
-    <h2>Rules <button class="lang-toggle" id="langBtn">বাংলা</button></h2>
+    <h2 data-i18n="rules">Rules</h2>
     <div class="rules" id="rulesEn">
       <b>Rules.</b> One scale — the one at home — for everyone, start to finish. Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins.
       <div class="stake">Stake: winner picks · losers fund it</div>
@@ -240,10 +236,10 @@
   </section>
 
   <section class="card">
-    <h2>Data</h2>
+    <h2 data-i18n="data">Data</h2>
     <div class="tools">
-      <button id="exportBtn">⬇ Backup</button>
-      <button id="importBtn">⬆ Restore</button>
+      <button id="exportBtn" data-i18n="backup">⬇ Backup</button>
+      <button id="importBtn" data-i18n="restore">⬆ Restore</button>
       <input type="file" id="importFile" accept="application/json" hidden>
     </div>
   </section>
@@ -308,13 +304,79 @@ const FIREBASE_CONFIG = {
     }
   }
 
-  // ---------- language toggle ----------
-  $('langBtn').addEventListener('click',()=>{
-    const bn=$('rulesBn').hidden;
-    $('rulesBn').hidden=!bn;
-    $('rulesEn').hidden=bn;
-    $('langBtn').textContent=bn?'English':'বাংলা';
-  });
+  // ---------- i18n ----------
+  const I18N={
+    en:{
+      pctWins:'% bodyweight lost wins',
+      daysLeft:'{n} days left',
+      leaderboard:'Leaderboard',
+      leaderboardSub:'most % lost since day one',
+      noWeighIns:'no weigh-ins yet',
+      lost:'LOST',
+      trend:'trend',
+      logWeight:'Log weight',
+      weightLb:'Weight (lb)',
+      logIt:'Log it',
+      tapName:'Tap your name first.',
+      realWeight:'Enter a real weight.',
+      history:'History',
+      rules:'Rules',
+      data:'Data',
+      backup:'⬇ Backup',
+      restore:'⬆ Restore',
+      logged:'Logged. Nice work, {name}.',
+      milestone:'{name} just crossed {n}% — milestone! 🏆',
+      streakMsg:'Logged — {n} days straight, {name}. Consistency wins this.',
+      trendingDown:'Logged — trending down. Keep going, {name}.',
+      emptyLog:'No weigh-ins yet. Baseline morning: all three on the scale, back to back.',
+      paceCheck:'Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.'
+    },
+    bn:{
+      pctWins:'% ওজন কমালেই জয়',
+      daysLeft:'{n} দিন বাকি',
+      leaderboard:'লিডারবোর্ড',
+      leaderboardSub:'প্রথম দিন থেকে যত % কমেছে',
+      noWeighIns:'এখনো ওজন নেওয়া হয়নি',
+      lost:'কমেছে',
+      trend:'গতি',
+      logWeight:'ওজন লিখুন',
+      weightLb:'ওজন (পাউন্ড)',
+      logIt:'লিখে রাখুন',
+      tapName:'আগে নিজের নাম চাপুন।',
+      realWeight:'সঠিক ওজন লিখুন।',
+      history:'ইতিহাস',
+      rules:'নিয়ম',
+      data:'ডেটা',
+      backup:'⬇ ব্যাকআপ',
+      restore:'⬆ ফিরিয়ে আনুন',
+      logged:'লিখে রাখা হয়েছে। বাহ, {name}!',
+      milestone:'{name} {n}% পার করেছে — মাইলফলক! 🏆',
+      streakMsg:'লিখে রাখা হয়েছে — টানা {n} দিন, {name}। লেগে থাকলেই জেতা যাবে।',
+      trendingDown:'লিখে রাখা হয়েছে — ওজন কমছে। চালিয়ে যাও, {name}।',
+      emptyLog:'এখনো কোনো ওজন নেওয়া হয়নি। শুরুর সকালে তিনজনই পরপর স্কেলে ওজন নাও।',
+      paceCheck:'গতি দেখো: সপ্তাহে ~১% এর বেশি কমছে। দারুণ চেষ্টা — ঠিকমতো খাওয়া আর পানি খাওয়া চালিয়ে যেও। ধীরে-সুস্থে এগোলেই ৭ আগস্টে জেতা যায়।'
+    }
+  };
+  const LANG_KEY='pomona-lang';
+  let lang=localStorage.getItem(LANG_KEY)==='bn'?'bn':'en';
+  const t=(k,vars)=>{
+    let s=(I18N[lang]&&I18N[lang][k])||I18N.en[k]||k;
+    if(vars)for(const v in vars)s=s.replace('{'+v+'}',vars[v]);
+    return s;
+  };
+  function setLang(l){
+    lang=l;
+    try{localStorage.setItem(LANG_KEY,l)}catch(e){}
+    document.documentElement.lang=l;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
+    document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});
+    $('langBtn').textContent=l==='bn'?'English':'বাংলা';
+    $('rulesEn').hidden=l==='bn';
+    $('rulesBn').hidden=l!=='bn';
+    updateCountdown();
+    render();
+  }
+  $('langBtn').addEventListener('click',()=>setLang(lang==='bn'?'en':'bn'));
 
   const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   $('when').value=todayStr();
@@ -405,8 +467,8 @@ const FIREBASE_CONFIG = {
   $('add').addEventListener('click',()=>{
     const who=selectedWho, when=$('when').value, wt=parseFloat($('wt').value);
     const msg=$('msg');
-    if(!who){msg.textContent='Tap your name first.';msg.style.color='var(--bad)';return}
-    if(!when||isNaN(wt)||wt<50||wt>700){msg.textContent='Enter a real weight.';msg.style.color='var(--bad)';return}
+    if(!who){msg.textContent=t('tapName');msg.style.color='var(--bad)';return}
+    if(!when||isNaN(wt)||wt<50||wt>700){msg.textContent=t('realWeight');msg.style.color='var(--bad)';return}
     const prev=personData(who);
     const prevPct=prev?prev.pct:null;
     entries=entries.filter(e=>!(e.who===who&&e.when===when));
@@ -416,14 +478,14 @@ const FIREBASE_CONFIG = {
     $('wt').value='';
     const now=personData(who);
     const name=PEOPLE.find(p=>p.id===who).name;
-    let text='Logged. Nice work, '+name+'.';
+    let text=t('logged',{name});
     if(prevPct!==null&&now&&Math.floor(now.pct)>Math.floor(prevPct)&&now.pct>0){
-      text=name+' just crossed '+Math.floor(now.pct)+'% — milestone! 🏆';
+      text=t('milestone',{name,n:Math.floor(now.pct)});
       confetti();
     }else if(now&&now.streak>=3){
-      text='Logged — '+now.streak+' days straight, '+name+'. Consistency wins this.';
+      text=t('streakMsg',{n:now.streak,name});
     }else if(now&&now.list.length>1&&now.cur.wt<now.list[now.list.length-2].wt){
-      text='Logged — trending down. Keep going, '+name+'.';
+      text=t('trendingDown',{name});
     }
     msg.textContent=text;msg.style.color='var(--good)';
     setTimeout(()=>{msg.textContent=''},3500);
@@ -472,12 +534,12 @@ const FIREBASE_CONFIG = {
     rows.forEach((r,i)=>{
       const div=document.createElement('div');
       div.className='row'+(i===0&&r.d?' first':'');
-      let sub='no weigh-ins yet', chips='', safety='', streakBadge='';
+      let sub=t('noWeighIns'), chips='', safety='', streakBadge='';
       if(r.d){
         sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' lb · '+fmtDate(r.d.cur.when);
         if(r.d.streak>=2)streakBadge='<span class="streak">🔥 '+r.d.streak+'d</span>';
         const c=[];
-        c.push('<span class="chip">trend −'+Math.max(0,r.d.trendPct).toFixed(2)+'%</span>');
+        c.push('<span class="chip">'+t('trend')+' −'+Math.max(0,r.d.trendPct).toFixed(2)+'%</span>');
         if(r.d.list.length>1){
           const prev=r.d.list[r.d.list.length-2];
           const ch=r.d.cur.wt-prev.wt;
@@ -488,7 +550,7 @@ const FIREBASE_CONFIG = {
         }
         chips='<div class="chips">'+c.join('')+'</div>';
         if(r.d.rateWk!==null&&r.d.spanDays>=7&&r.d.rateWk>1.4){
-          safety='<div class="safety">Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.</div>';
+          safety='<div class="safety">'+t('paceCheck')+'</div>';
         }
         sub+=spark(r.d);
       }
@@ -497,12 +559,12 @@ const FIREBASE_CONFIG = {
         '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
         '<div class="rank">'+(i+1)+'</div>'+
         '<div class="who"><div class="name">'+r.name+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
-        '<div class="pct'+(i===0&&r.d?' leading':'')+'">'+pctTxt+'<small>LOST</small></div>';
+        '<div class="pct'+(i===0&&r.d?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>';
       board.appendChild(div);
     });
 
     const log=$('log');log.innerHTML='';
-    if(!entries.length){log.innerHTML='<div class="empty">No weigh-ins yet. Baseline morning: all three on the scale, back to back.</div>';return}
+    if(!entries.length){log.innerHTML='<div class="empty">'+t('emptyLog')+'</div>';return}
     [...entries].reverse().forEach(e=>{
       const p=PEOPLE.find(x=>x.id===e.who);
       if(!p)return;
@@ -521,14 +583,16 @@ const FIREBASE_CONFIG = {
     });
   }
 
-  const days=Math.max(0,Math.ceil((END-new Date())/86400000));
-  $('countdown').textContent=days+' days left';
+  function updateCountdown(){
+    const days=Math.max(0,Math.ceil((END-new Date())/86400000));
+    $('countdown').textContent=t('daysLeft',{n:days});
+  }
 
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
 
-  render();
+  setLang(lang);
 })();
 </script>
 </body>
