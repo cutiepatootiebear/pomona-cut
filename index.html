@@ -121,6 +121,9 @@
     appearance:none;-webkit-appearance:none;
   }
   select:focus,input:focus{border-color:var(--shadow);background:#fff;box-shadow:0 0 0 3px rgba(31,58,90,.18)}
+  .who-pills{display:flex;gap:8px}
+  .wp{flex:1;min-height:56px;border-radius:15px;border:1.5px solid rgba(43,42,40,.18);background:rgba(255,255,255,.65);color:var(--ink);font-family:var(--mono);font-size:1rem;cursor:pointer}
+  .wp.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
   input::placeholder{color:rgba(43,42,40,.35)}
   select option{color:#111}
   button.add{
@@ -199,13 +202,8 @@
   <section class="card">
     <h2>Log a weigh-in <span class="h2sub">lbs · same scale · anytime</span></h2>
     <div class="form">
-      <select id="who" aria-label="Who">
-        <option value="" disabled selected>Who are you?</option>
-        <option value="jameel">Jameel</option>
-        <option value="hibbu">Hibbu</option>
-        <option value="mom">Mom</option>
-      </select>
-      <input type="date" id="when" aria-label="Date">
+      <div class="who-pills" role="radiogroup" aria-label="Who" style="grid-column:1/-1"><button type="button" class="wp" data-who="jameel">Jameel</button><button type="button" class="wp" data-who="hibbu">Hibbu</button><button type="button" class="wp" data-who="mom">Mom</button></div>
+      <input type="date" id="when" aria-label="Date" style="grid-column:1/-1">
       <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" aria-label="Weight in pounds" style="grid-column:1/-1">
       <button class="add" id="add">Log it</button>
       <div class="msg" id="msg" aria-live="polite"></div>
@@ -383,11 +381,21 @@ const FIREBASE_CONFIG = {
 
   function fmtDate(s){const[y,m,d]=s.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+d)}
 
+  // ---------- who pills ----------
+  let selectedWho=null;
+  const pills=document.querySelectorAll('.wp');
+  pills.forEach(b=>{
+    b.addEventListener('click',()=>{
+      selectedWho=b.dataset.who;
+      pills.forEach(x=>x.classList.toggle('on',x===b));
+    });
+  });
+
   // ---------- log entry ----------
   $('add').addEventListener('click',()=>{
-    const who=$('who').value, when=$('when').value, wt=parseFloat($('wt').value);
+    const who=selectedWho, when=$('when').value, wt=parseFloat($('wt').value);
     const msg=$('msg');
-    if(!who){msg.textContent='Pick your name first.';msg.style.color='var(--bad)';return}
+    if(!who){msg.textContent='Tap your name first.';msg.style.color='var(--bad)';return}
     if(!when||isNaN(wt)||wt<50||wt>700){msg.textContent='Enter a real weight.';msg.style.color='var(--bad)';return}
     const prev=personData(who);
     const prevPct=prev?prev.pct:null;
