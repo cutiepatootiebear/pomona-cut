@@ -1,6 +1,6 @@
 {
-  "name": "The Pomona Cut",
-  "short_name": "Pomona Cut",
+  "name": "Waist Management",
+  "short_name": "Waist Management",
   "description": "3-week family weight loss competition tracker",
   "start_url": "./index.html",
   "scope": "./",
