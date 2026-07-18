@@ -76,7 +76,9 @@
   }
   #dot{width:9px;height:9px;border-radius:50%;background:#e8b64c;flex:none}
   #dot.live{background:#7ddfa8}
-  #langBtn{margin-left:auto;cursor:pointer;min-height:44px}
+  /* letter-spacing breaks Bengali glyph shaping (বাংলা → বাং লা) — zero it wherever Bangla renders */
+  #langBtn{margin-left:auto;cursor:pointer;min-height:44px;font-family:var(--sans);font-weight:600;letter-spacing:0;text-transform:none}
+  :root[lang="bn"] .pill,:root[lang="bn"] .card h2,:root[lang="bn"] .chip,:root[lang="bn"] .streak,:root[lang="bn"] .stake,:root[lang="bn"] button.add,:root[lang="bn"] .tools button,:root[lang="bn"] .pct small{letter-spacing:0;text-transform:none}
 
   .card{
     background:rgba(244,242,238,.6);
@@ -196,7 +198,7 @@
       <span class="pill" data-i18n="pctWins">% bodyweight lost wins</span>
       <span class="pill" id="countdown">— days left</span>
       <span class="pill" aria-label="Sync status" id="syncPill"><span id="dot"></span></span>
-      <button type="button" class="pill" id="langBtn">বাংলা</button>
+      <button type="button" class="pill" id="langBtn" lang="bn">বাংলা</button>
     </div>
   </header>
 
@@ -371,6 +373,7 @@ const FIREBASE_CONFIG = {
     document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
     document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});
     $('langBtn').textContent=l==='bn'?'English':'বাংলা';
+    $('langBtn').setAttribute('lang',l==='bn'?'en':'bn');
     $('rulesEn').hidden=l==='bn';
     $('rulesBn').hidden=l!=='bn';
     updateCountdown();
