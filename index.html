@@ -484,7 +484,7 @@ function urlB64ToUint8Array(base64String){
 
   // ---------- who pills ----------
   let selectedWho=null;
-  const pills=document.querySelectorAll('.wp');
+  const pills=document.querySelectorAll('.who-pills .wp');
   pills.forEach(b=>{
     b.addEventListener('click',()=>{
       selectedWho=b.dataset.who;
@@ -655,6 +655,7 @@ function urlB64ToUint8Array(base64String){
   }
 
   notifBtn.addEventListener('click',async()=>{
+    console.log('[notif] selectedWho='+selectedWho+' notifWho='+notifWho+' permission='+(pushSupported?Notification.permission:'unsupported')+' state='+notifState);
     if(!(pushSupported&&isStandalone)||notifState==='on')return;
     const who=selectedWho||notifWho;
     const msg=$('msg');
