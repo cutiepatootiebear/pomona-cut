@@ -170,8 +170,27 @@
   }
   button.add:active{transform:scale(.98)}
   .msg{grid-column:1/-1;font-weight:600;font-size:.88rem;color:var(--good);text-align:center;min-height:1.3em}
-  .wp.notif{width:100%;margin-top:2px;min-height:52px;font-size:.72rem;letter-spacing:0;line-height:1.45;white-space:normal;padding:12px 16px}
-  .notif-hint{margin-top:8px;font-family:var(--mono);font-size:.66rem;line-height:1.6;color:var(--ink-soft);text-align:center}
+  .notif-btn{
+    flex:none;width:40px;height:40px;border-radius:50%;cursor:pointer;padding:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:.86rem;line-height:1;
+    border:1px solid rgba(244,242,238,.35);
+    background:rgba(244,242,238,.12);
+    backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .notif-btn:active{transform:scale(.94)}
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);
+    top:calc(env(safe-area-inset-top) + 60px);z-index:100;
+    max-width:min(88vw,420px);
+    background:var(--ink);color:var(--cream);
+    font-size:.72rem;line-height:1.5;text-align:center;
+    padding:10px 14px;border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  .toast.show{opacity:1}
 
   /* log */
   .log{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
@@ -210,6 +229,7 @@
     <div class="dates">
       <span class="pill" id="countdown">— days left</span>
       <button type="button" class="lang" id="langBtn"><span class="lg" aria-hidden="true">🌐</span><span id="langLabel" lang="bn">বাংলা</span></button>
+      <button type="button" class="notif-btn" id="notifBtn" aria-label="Alerts">🔕</button>
     </div>
   </header>
 
@@ -226,8 +246,6 @@
       <button class="add" id="add" data-i18n="logIt">Log it</button>
       <div class="msg" id="msg" aria-live="polite"></div>
     </div>
-    <button type="button" class="wp notif" id="notifBtn" hidden></button>
-    <div class="notif-hint" id="notifHint" hidden></div>
   </section>
 
   <section class="card">
@@ -253,6 +271,8 @@
   </section>
 
 </div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -613,20 +633,20 @@ function urlB64ToUint8Array(base64String){
   let notifWho=localStorage.getItem(NOTIF_WHO_KEY);
   const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   const pushSupported='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
-  const notifBtn=$('notifBtn'), notifHint=$('notifHint');
+  const notifBtn=$('notifBtn');
   let notifState='off'; // 'on' | 'off' | 'blocked'
+  let toastTimer=null;
+
+  function showToast(text){
+    const el=$('toast');
+    el.textContent=text;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>el.classList.remove('show'),4000);
+  }
 
   function renderNotif(){
-    if(!(pushSupported&&isStandalone)){
-      notifBtn.hidden=true;
-      notifHint.hidden=false;
-      notifHint.textContent=t('notif_install');
-      return;
-    }
-    notifHint.hidden=true;
-    notifBtn.hidden=false;
-    notifBtn.textContent=t(notifState==='on'?'notif_on':notifState==='blocked'?'notif_blocked':'notif_off');
-    notifBtn.classList.toggle('on',notifState==='on');
+    notifBtn.textContent=notifState==='on'?'🔔':'🔕';
   }
 
   function saveSubscription(sub){
@@ -656,14 +676,19 @@ function urlB64ToUint8Array(base64String){
 
   notifBtn.addEventListener('click',async()=>{
     console.log('[notif] selectedWho='+selectedWho+' notifWho='+notifWho+' permission='+(pushSupported?Notification.permission:'unsupported')+' state='+notifState);
-    if(!(pushSupported&&isStandalone)||notifState==='on')return;
+    if(!(pushSupported&&isStandalone)){showToast(t('notif_install'));return}
+    if(Notification.permission==='denied'){notifState='blocked';renderNotif();showToast(t('notif_blocked'));return}
+    if(notifState==='on')return;
     const who=selectedWho||notifWho;
-    const msg=$('msg');
-    if(!who){msg.textContent=t('tapName');msg.style.color='var(--bad)';setTimeout(()=>{msg.textContent=''},3500);return}
+    if(!who){showToast(t('tapName'));return}
     try{
       // permission must be requested inside the tap gesture on iOS
       const perm=await Notification.requestPermission();
-      if(perm!=='granted'){notifState=perm==='denied'?'blocked':'off';renderNotif();return}
+      if(perm!=='granted'){
+        notifState=perm==='denied'?'blocked':'off';
+        if(perm==='denied')showToast(t('notif_blocked'));
+        renderNotif();return;
+      }
       const reg=await navigator.serviceWorker.ready;
       const sub=(await reg.pushManager.getSubscription())||await subscribePush(reg);
       notifWho=who;
