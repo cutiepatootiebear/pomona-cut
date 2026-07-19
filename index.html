@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&family=Noto+Sans+Bengali:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --grad-start:#6aa6e0;
@@ -28,7 +28,7 @@
     --warn:#8a5a1f;
     --bad:#a3452f;
     --serif:'Fraunces',Georgia,serif;
-    --sans:'Inter','Noto Sans Bengali',system-ui,sans-serif;
+    --sans:'Inter',system-ui,sans-serif;
     --mono:'Roboto Mono',ui-monospace,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -61,7 +61,7 @@
   .wrap{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 
   header{padding:8px 4px 4px;text-align:left}
-  /* chips + lang toggle share one row that must fit 390px phones — sizes are tight on purpose */
+  /* chips + alerts button share one row that must fit 390px phones — sizes are tight on purpose */
   .dates{display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
   .pill{
     display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
@@ -72,19 +72,6 @@
     backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
   }
-  /* letter-spacing breaks Bengali glyph shaping (বাংলা → বাং লা) — zero it wherever Bangla renders */
-  .lang{
-    margin-left:auto;flex:none;cursor:pointer;
-    display:inline-flex;align-items:center;gap:5px;
-    min-height:44px;padding:7px 11px;
-    font-family:var(--sans);font-weight:600;font-size:.66rem;letter-spacing:0;text-transform:none;
-    color:var(--cream);background:var(--ink);
-    border:none;border-radius:999px;
-    box-shadow:0 2px 8px rgba(0,0,0,.25);
-  }
-  .lang .lg{font-size:.75rem}
-  :root[lang="bn"] .pill,:root[lang="bn"] .card h2,:root[lang="bn"] .chip,:root[lang="bn"] .streak,:root[lang="bn"] .stake,:root[lang="bn"] button.add,:root[lang="bn"] .pct small,:root[lang="bn"] .wp-label,:root[lang="bn"] .today-chip{letter-spacing:0;text-transform:none}
-
   .card{
     background:rgba(244,242,238,.6);
     border:1px solid rgba(244,242,238,.55);
@@ -171,7 +158,7 @@
   button.add:active{transform:scale(.98)}
   .msg{grid-column:1/-1;font-weight:600;font-size:.88rem;color:var(--good);text-align:center;min-height:1.3em}
   .notif-btn{
-    flex:none;width:40px;height:40px;border-radius:50%;cursor:pointer;padding:0;
+    margin-left:auto;flex:none;width:40px;height:40px;border-radius:50%;cursor:pointer;padding:0;
     display:inline-flex;align-items:center;justify-content:center;
     font-size:.86rem;line-height:1;
     border:1px solid rgba(244,242,238,.35);
@@ -228,45 +215,40 @@
   <header>
     <div class="dates">
       <span class="pill" id="countdown">— days left</span>
-      <button type="button" class="lang" id="langBtn"><span class="lg" aria-hidden="true">🌐</span><span id="langLabel" lang="bn">বাংলা</span></button>
       <button type="button" class="notif-btn" id="notifBtn" aria-label="Alerts">🔕</button>
     </div>
   </header>
 
   <section class="card">
-    <h2 data-i18n="logWeight">Log weight</h2>
+    <h2>Log weight</h2>
     <div class="form">
-      <div class="wp-label" data-i18n="tapNameLabel" style="grid-column:1/-1">Tap your name</div>
+      <div class="wp-label" style="grid-column:1/-1">Tap your name</div>
       <div class="who-pills" role="radiogroup" aria-label="Who" style="grid-column:1/-1"><button type="button" class="wp" data-who="jameel">Jameel</button><button type="button" class="wp" data-who="hibbu">Hibbu</button><button type="button" class="wp" data-who="mom">Mom</button></div>
       <div class="date-row" style="grid-column:1/-1">
         <input type="date" id="when" aria-label="Date">
-        <span class="today-chip" id="todayChip" data-i18n="today" hidden>Today</span>
+        <span class="today-chip" id="todayChip" hidden>Today</span>
       </div>
-      <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" data-i18n-ph="weightLb" aria-label="Weight in pounds" style="grid-column:1/-1">
-      <button class="add" id="add" data-i18n="logIt">Log it</button>
+      <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" aria-label="Weight in pounds" style="grid-column:1/-1">
+      <button class="add" id="add">Log it</button>
       <div class="msg" id="msg" aria-live="polite"></div>
     </div>
   </section>
 
   <section class="card">
-    <h2 data-i18n="leaderboard">Leaderboard</h2>
+    <h2>Leaderboard</h2>
     <div class="board" id="board"></div>
   </section>
 
   <section class="card">
-    <h2 data-i18n="rules">Rules</h2>
-    <div class="rules" id="rulesEn">
+    <h2>Rules</h2>
+    <div class="rules">
       <b>Rules.</b> Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins. We count % instead of pounds because raw pounds favors the biggest person — a heavier body drops more pounds for the same effort. % of your own starting weight makes it an even race at every size.
       <div class="stake">Winner gets $100 from each loser.</div>
-    </div>
-    <div class="rules" id="rulesBn" hidden lang="bn">
-      <b>নিয়ম।</b> যখন সময় পাও তখনই ওজন নাও, যতবার খুশি। প্রথম ওজনটাই তোমার বেসলাইন। <b>৭ আগস্টের</b> মধ্যে সবচেয়ে বেশি % কমালেই জয়। আমরা পাউন্ড না গুনে % গুনছি, কারণ শুধু পাউন্ড গুনলে যার ওজন বেশি সে এগিয়ে থাকে — বড় শরীরে একই চেষ্টায় বেশি পাউন্ড কমে। নিজের শুরুর ওজনের % ধরলে সবার জন্য সমান লড়াই।
-      <div class="stake">বিজয়ী প্রত্যেক পরাজিতের কাছ থেকে $১০০ পাবে।</div>
     </div>
   </section>
 
   <section class="card">
-    <h2 data-i18n="history">History</h2>
+    <h2>History</h2>
     <div class="log" id="log"></div>
   </section>
 
@@ -342,86 +324,6 @@ function urlB64ToUint8Array(base64String){
     }
     return Promise.resolve();
   }
-
-  // ---------- i18n ----------
-  const I18N={
-    en:{
-      daysLeft:'{n} days left',
-      leaderboard:'Leaderboard',
-      noWeighIns:'no weigh-ins yet',
-      lost:'LOST',
-      trend:'trend',
-      logWeight:'Log weight',
-      weightLb:'Weight (lb)',
-      logIt:'Log it',
-      tapNameLabel:'Tap your name',
-      tapName:'Tap your name first.',
-      realWeight:'Enter a real weight.',
-      tied:'Tie',
-      today:'Today',
-      history:'History',
-      rules:'Rules',
-      logged:'Logged. Nice work, {name}.',
-      milestone:'{name} just crossed {n}% — milestone! 🏆',
-      streakMsg:'Logged — {n} days straight, {name}. Consistency wins this.',
-      trendingDown:'Logged — trending down. Keep going, {name}.',
-      emptyLog:'No weigh-ins yet. Baseline morning: all three on the scale, back to back.',
-      paceCheck:'Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.',
-      notif_on:'🔔 Alerts on',
-      notif_off:'🔔 Alerts off — tap to enable',
-      notif_blocked:'🔕 Alerts blocked — enable in Settings › pomona-cut › Notifications',
-      notif_install:'Add to Home Screen first, then open from the icon to enable alerts'
-    },
-    bn:{
-      daysLeft:'{n} দিন বাকি',
-      leaderboard:'লিডারবোর্ড',
-      noWeighIns:'এখনো ওজন নেওয়া হয়নি',
-      lost:'কমেছে',
-      trend:'গতি',
-      logWeight:'ওজন লিখুন',
-      weightLb:'ওজন (পাউন্ড)',
-      logIt:'লিখে রাখুন',
-      tapNameLabel:'নিজের নাম চাপুন',
-      tapName:'আগে নিজের নাম চাপুন।',
-      realWeight:'সঠিক ওজন লিখুন।',
-      tied:'সমান',
-      today:'আজ',
-      history:'ইতিহাস',
-      rules:'নিয়ম',
-      logged:'লিখে রাখা হয়েছে। বাহ, {name}!',
-      milestone:'{name} {n}% পার করেছে — মাইলফলক! 🏆',
-      streakMsg:'লিখে রাখা হয়েছে — টানা {n} দিন, {name}। লেগে থাকলেই জেতা যাবে।',
-      trendingDown:'লিখে রাখা হয়েছে — ওজন কমছে। চালিয়ে যাও, {name}।',
-      emptyLog:'এখনো কোনো ওজন নেওয়া হয়নি। শুরুর সকালে তিনজনই পরপর স্কেলে ওজন নাও।',
-      paceCheck:'গতি দেখো: সপ্তাহে ~১% এর বেশি কমছে। দারুণ চেষ্টা — ঠিকমতো খাওয়া আর পানি খাওয়া চালিয়ে যেও। ধীরে-সুস্থে এগোলেই ৭ আগস্টে জেতা যায়।',
-      notif_on:'🔔 অ্যালার্ট চালু আছে',
-      notif_off:'🔔 অ্যালার্ট বন্ধ — চালু করতে চাপুন',
-      notif_blocked:'🔕 অ্যালার্ট ব্লক করা — Settings › pomona-cut › Notifications-এ গিয়ে চালু করুন',
-      notif_install:'আগে Home Screen-এ যোগ করুন, তারপর আইকন থেকে অ্যাপ খুলে অ্যালার্ট চালু করুন'
-    }
-  };
-  const LANG_KEY='pomona-lang';
-  let lang=localStorage.getItem(LANG_KEY)==='bn'?'bn':'en';
-  const t=(k,vars)=>{
-    let s=(I18N[lang]&&I18N[lang][k])||I18N.en[k]||k;
-    if(vars)for(const v in vars)s=s.replace('{'+v+'}',vars[v]);
-    return s;
-  };
-  function setLang(l){
-    lang=l;
-    try{localStorage.setItem(LANG_KEY,l)}catch(e){}
-    document.documentElement.lang=l;
-    document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
-    document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});
-    $('langLabel').textContent=l==='bn'?'English':'বাংলা';
-    $('langLabel').setAttribute('lang',l==='bn'?'en':'bn');
-    $('rulesEn').hidden=l==='bn';
-    $('rulesBn').hidden=l!=='bn';
-    updateCountdown();
-    render();
-    renderNotif();
-  }
-  $('langBtn').addEventListener('click',()=>setLang(lang==='bn'?'en':'bn'));
 
   const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   $('when').value=todayStr();
@@ -516,8 +418,8 @@ function urlB64ToUint8Array(base64String){
   $('add').addEventListener('click',()=>{
     const who=selectedWho, when=$('when').value, wt=parseFloat($('wt').value);
     const msg=$('msg');
-    if(!who){msg.textContent=t('tapName');msg.style.color='var(--bad)';return}
-    if(!when||isNaN(wt)||wt<50||wt>700){msg.textContent=t('realWeight');msg.style.color='var(--bad)';return}
+    if(!who){msg.textContent='Tap your name first.';msg.style.color='var(--bad)';return}
+    if(!when||isNaN(wt)||wt<50||wt>700){msg.textContent='Enter a real weight.';msg.style.color='var(--bad)';return}
     const prev=personData(who);
     const prevPct=prev?prev.pct:null;
     entries=entries.filter(e=>!(e.who===who&&e.when===when));
@@ -527,14 +429,14 @@ function urlB64ToUint8Array(base64String){
     $('wt').value='';
     const now=personData(who);
     const name=PEOPLE.find(p=>p.id===who).name;
-    let text=t('logged',{name});
+    let text='Logged. Nice work, '+name+'.';
     if(prevPct!==null&&now&&Math.floor(now.pct)>Math.floor(prevPct)&&now.pct>0){
-      text=t('milestone',{name,n:Math.floor(now.pct)});
+      text=name+' just crossed '+Math.floor(now.pct)+'% — milestone! 🏆';
       confetti();
     }else if(now&&now.streak>=3){
-      text=t('streakMsg',{n:now.streak,name});
+      text='Logged — '+now.streak+' days straight, '+name+'. Consistency wins this.';
     }else if(now&&now.list.length>1&&now.cur.wt<now.list[now.list.length-2].wt){
-      text=t('trendingDown',{name});
+      text='Logged — trending down. Keep going, '+name+'.';
     }
     msg.textContent=text;msg.style.color='var(--good)';
     setTimeout(()=>{msg.textContent=''},3500);
@@ -566,12 +468,12 @@ function urlB64ToUint8Array(base64String){
       const div=document.createElement('div');
       const isFirst=r.rank===1;
       div.className='row'+(isFirst?' first':'');
-      let sub=t('noWeighIns'), chips='', safety='', streakBadge='';
+      let sub='no weigh-ins yet', chips='', safety='', streakBadge='';
       if(r.d){
         sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' · '+fmtDate(r.d.cur.when);
         if(r.d.streak>=2)streakBadge='<span class="streak">🔥 '+r.d.streak+'d</span>';
         const c=[];
-        c.push('<span class="chip">'+t('trend')+' −'+Math.max(0,r.d.trendPct).toFixed(2)+'%</span>');
+        c.push('<span class="chip">trend −'+Math.max(0,r.d.trendPct).toFixed(2)+'%</span>');
         if(r.d.list.length>1){
           const prev=r.d.list[r.d.list.length-2];
           const ch=r.d.cur.wt-prev.wt;
@@ -582,23 +484,23 @@ function urlB64ToUint8Array(base64String){
         }
         chips='<div class="chips">'+c.join('')+'</div>';
         if(r.d.rateWk!==null&&r.d.spanDays>=7&&r.d.rateWk>1.4){
-          safety='<div class="safety">'+t('paceCheck')+'</div>';
+          safety='<div class="safety">Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.</div>';
         }
         sub+=spark(r.d);
       }
       const pctTxt=r.d?((r.d.pct>=0?'−':'+')+Math.abs(r.d.pct).toFixed(2)+'%'):'·';
-      const rankTxt=r.rank===null?'–':(rankCounts[r.rank]>1?'<span class="tie">'+t('tied')+'</span>':r.rank);
+      const rankTxt=r.rank===null?'–':(rankCounts[r.rank]>1?'<span class="tie">Tie</span>':r.rank);
       div.innerHTML=
         '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
         '<div class="rank">'+rankTxt+'</div>'+
         '<div class="who"><div class="name">'+r.name+streakBadge+'</div></div>'+
-        '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>'+
+        '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>LOST</small></div>'+
         '<div class="detail"><div class="sub">'+sub+'</div>'+chips+safety+'</div>';
       board.appendChild(div);
     });
 
     const log=$('log');log.innerHTML='';
-    if(!entries.length){log.innerHTML='<div class="empty">'+t('emptyLog')+'</div>';return}
+    if(!entries.length){log.innerHTML='<div class="empty">No weigh-ins yet. Baseline morning: all three on the scale, back to back.</div>';return}
     [...entries].reverse().forEach(e=>{
       const p=PEOPLE.find(x=>x.id===e.who);
       if(!p)return;
@@ -619,7 +521,7 @@ function urlB64ToUint8Array(base64String){
 
   function updateCountdown(){
     const days=Math.max(0,Math.ceil((END-new Date())/86400000));
-    $('countdown').textContent=t('daysLeft',{n:days});
+    $('countdown').textContent=days+' days left';
   }
 
   // ---------- web push ----------
@@ -676,17 +578,17 @@ function urlB64ToUint8Array(base64String){
 
   notifBtn.addEventListener('click',async()=>{
     console.log('[notif] selectedWho='+selectedWho+' notifWho='+notifWho+' permission='+(pushSupported?Notification.permission:'unsupported')+' state='+notifState);
-    if(!(pushSupported&&isStandalone)){showToast(t('notif_install'));return}
-    if(Notification.permission==='denied'){notifState='blocked';renderNotif();showToast(t('notif_blocked'));return}
+    if(!(pushSupported&&isStandalone)){showToast('Add to Home Screen first, then open from the icon to enable alerts');return}
+    if(Notification.permission==='denied'){notifState='blocked';renderNotif();showToast('🔕 Alerts blocked — enable in Settings › pomona-cut › Notifications');return}
     if(notifState==='on')return;
     const who=selectedWho||notifWho;
-    if(!who){showToast(t('tapName'));return}
+    if(!who){showToast('Tap your name first.');return}
     try{
       // permission must be requested inside the tap gesture on iOS
       const perm=await Notification.requestPermission();
       if(perm!=='granted'){
         notifState=perm==='denied'?'blocked':'off';
-        if(perm==='denied')showToast(t('notif_blocked'));
+        if(perm==='denied')showToast('🔕 Alerts blocked — enable in Settings › pomona-cut › Notifications');
         renderNotif();return;
       }
       const reg=await navigator.serviceWorker.ready;
@@ -729,7 +631,8 @@ function urlB64ToUint8Array(base64String){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
 
-  setLang(lang);
+  updateCountdown();
+  render();
   syncPushState();
 })();
 </script>
