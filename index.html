@@ -32,7 +32,7 @@
     --mono:'Roboto Mono',ui-monospace,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html{font-size:21px}
+  html{font-size:22px}
   body{
     min-height:100dvh;
     font-family:var(--sans);color:var(--cream);
@@ -105,7 +105,7 @@
     border-radius:18px;border:1px solid rgba(43,42,40,.1);
     background:rgba(255,255,255,.5);
     padding:15px;
-    display:grid;grid-template-columns:34px 1fr auto;align-items:start;gap:10px;
+    display:grid;grid-template-columns:34px 1fr auto;align-items:start;gap:2px 10px;
   }
   .row .bar{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,rgba(106,166,224,.28),rgba(106,166,224,0));transition:width .6s cubic-bezier(.2,.8,.2,1)}
   .row>*{position:relative}
@@ -113,9 +113,10 @@
   .rank .tie{font-size:.66rem;letter-spacing:0}
   .row.first{background:var(--cream);border-color:rgba(43,42,40,.18);box-shadow:0 10px 30px -14px rgba(31,58,90,.5)}
   .row.first .rank{color:var(--ink)}
-  .who .name{font-weight:700;font-size:1.2rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;color:var(--ink)}
+  .who .name{font-weight:700;font-size:1.4rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;color:var(--ink)}
   .streak{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;white-space:nowrap;color:var(--warn);border:1px solid rgba(138,90,31,.35);background:rgba(232,182,76,.18);border-radius:999px;padding:2px 8px}
-  .who .sub{font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-top:4px}
+  .detail{grid-column:2/-1}
+  .sub{font-family:var(--mono);font-size:min(1rem,4.5vw);color:var(--ink-soft);margin-top:2px;white-space:nowrap}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .chip{display:inline-block;font-family:var(--mono);font-size:.7rem;padding:4px 10px;border-radius:999px;border:1px solid rgba(43,42,40,.14);color:var(--ink-soft);background:rgba(255,255,255,.5)}
   .chip.down{color:var(--good);border-color:rgba(15,107,69,.3);background:rgba(15,107,69,.08)}
@@ -123,7 +124,7 @@
   .chip.proj{color:var(--shadow);border-color:rgba(31,58,90,.3);background:rgba(31,58,90,.07)}
   .safety{margin-top:9px;font-size:.76rem;line-height:1.5;color:var(--warn);background:rgba(232,182,76,.16);border:1px solid rgba(138,90,31,.3);border-radius:12px;padding:9px 11px}
   .spark{margin-top:8px;display:block}
-  .pct{font-family:var(--mono);font-weight:700;font-size:1.5rem;text-align:right;color:var(--ink);padding-top:1px}
+  .pct{font-family:var(--mono);font-weight:700;font-size:1.7rem;text-align:right;color:var(--ink);padding-top:1px}
   .pct small{display:block;font-weight:400;font-size:.56rem;color:var(--ink-faint);letter-spacing:.14em;margin-top:3px}
   .pct.leading{color:var(--good)}
 
@@ -207,7 +208,6 @@
 
   <header>
     <div class="dates">
-      <span class="pill" data-i18n="pctWins">% bodyweight lost wins</span>
       <span class="pill" id="countdown">— days left</span>
       <button type="button" class="lang" id="langBtn"><span class="lg" aria-hidden="true">🌐</span><span id="langLabel" lang="bn">বাংলা</span></button>
     </div>
@@ -234,20 +234,20 @@
   </section>
 
   <section class="card">
-    <h2 data-i18n="history">History</h2>
-    <div class="log" id="log"></div>
-  </section>
-
-  <section class="card">
     <h2 data-i18n="rules">Rules</h2>
     <div class="rules" id="rulesEn">
-      <b>Rules.</b> One scale — the one at home — for everyone, start to finish. Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins. % means percent of your own starting weight — so every size competes fairly.
+      <b>Rules.</b> Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins. We count % instead of pounds because raw pounds favors the biggest person — a heavier body drops more pounds for the same effort. % of your own starting weight makes it an even race at every size.
       <div class="stake">Winner gets $100 from each loser.</div>
     </div>
     <div class="rules" id="rulesBn" hidden lang="bn">
-      <b>নিয়ম।</b> সবার জন্য একটাই স্কেল — বাসারটা — শুরু থেকে শেষ পর্যন্ত। যখন সময় পাও তখনই ওজন নাও, যতবার খুশি। প্রথম ওজনটাই তোমার বেসলাইন। <b>৭ আগস্টের</b> মধ্যে সবচেয়ে বেশি % কমালেই জয়। % মানে নিজের শুরুর ওজনের শতাংশ — তাই সবার জন্য সমান লড়াই।
+      <b>নিয়ম।</b> যখন সময় পাও তখনই ওজন নাও, যতবার খুশি। প্রথম ওজনটাই তোমার বেসলাইন। <b>৭ আগস্টের</b> মধ্যে সবচেয়ে বেশি % কমালেই জয়। আমরা পাউন্ড না গুনে % গুনছি, কারণ শুধু পাউন্ড গুনলে যার ওজন বেশি সে এগিয়ে থাকে — বড় শরীরে একই চেষ্টায় বেশি পাউন্ড কমে। নিজের শুরুর ওজনের % ধরলে সবার জন্য সমান লড়াই।
       <div class="stake">বিজয়ী প্রত্যেক পরাজিতের কাছ থেকে $১০০ পাবে।</div>
     </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="history">History</h2>
+    <div class="log" id="log"></div>
   </section>
 
 </div>
@@ -310,7 +310,6 @@ const FIREBASE_CONFIG = {
   // ---------- i18n ----------
   const I18N={
     en:{
-      pctWins:'% bodyweight lost wins',
       daysLeft:'{n} days left',
       leaderboard:'Leaderboard',
       leaderboardSub:'most % lost since day one',
@@ -335,7 +334,6 @@ const FIREBASE_CONFIG = {
       paceCheck:'Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.'
     },
     bn:{
-      pctWins:'% ওজন কমালেই জয়',
       daysLeft:'{n} দিন বাকি',
       leaderboard:'লিডারবোর্ড',
       leaderboardSub:'প্রথম দিন থেকে যত % কমেছে',
@@ -527,7 +525,7 @@ const FIREBASE_CONFIG = {
       div.className='row'+(isFirst?' first':'');
       let sub=t('noWeighIns'), chips='', safety='', streakBadge='';
       if(r.d){
-        sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' lb · '+fmtDate(r.d.cur.when);
+        sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' · '+fmtDate(r.d.cur.when);
         if(r.d.streak>=2)streakBadge='<span class="streak">🔥 '+r.d.streak+'d</span>';
         const c=[];
         c.push('<span class="chip">'+t('trend')+' −'+Math.max(0,r.d.trendPct).toFixed(2)+'%</span>');
@@ -550,8 +548,9 @@ const FIREBASE_CONFIG = {
       div.innerHTML=
         '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
         '<div class="rank">'+rankTxt+'</div>'+
-        '<div class="who"><div class="name">'+r.name+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
-        '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>';
+        '<div class="who"><div class="name">'+r.name+streakBadge+'</div></div>'+
+        '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>'+
+        '<div class="detail"><div class="sub">'+sub+'</div>'+chips+safety+'</div>';
       board.appendChild(div);
     });
 
