@@ -110,17 +110,17 @@
   .row .bar{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,rgba(106,166,224,.28),rgba(106,166,224,0));transition:width .6s cubic-bezier(.2,.8,.2,1)}
   .row>*{position:relative}
   .rank{font-family:var(--serif);font-weight:600;font-size:1.15rem;color:var(--ink-faint);padding-top:1px;white-space:nowrap}
-  .rank .tie{font-size:.82rem;letter-spacing:-.02em}
   .row.first{background:var(--cream);border-color:rgba(43,42,40,.18);box-shadow:0 10px 30px -14px rgba(31,58,90,.5)}
   .row.first .rank{color:var(--ink)}
-  .who .name{font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:8px;color:var(--ink)}
-  .streak{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;color:var(--warn);border:1px solid rgba(138,90,31,.35);background:rgba(232,182,76,.18);border-radius:999px;padding:2px 8px}
+  .who .name{font-weight:700;font-size:1.05rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;color:var(--ink)}
+  .streak{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;white-space:nowrap;color:var(--warn);border:1px solid rgba(138,90,31,.35);background:rgba(232,182,76,.18);border-radius:999px;padding:2px 8px}
   .who .sub{font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-top:4px}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .chip{display:inline-block;font-family:var(--mono);font-size:.64rem;padding:4px 10px;border-radius:999px;border:1px solid rgba(43,42,40,.14);color:var(--ink-soft);background:rgba(255,255,255,.5)}
   .chip.down{color:var(--good);border-color:rgba(15,107,69,.3);background:rgba(15,107,69,.08)}
   .chip.up{color:var(--bad);border-color:rgba(163,69,47,.3);background:rgba(163,69,47,.08)}
   .chip.proj{color:var(--shadow);border-color:rgba(31,58,90,.3);background:rgba(31,58,90,.07)}
+  .chip.tied{color:var(--shadow);border-color:rgba(31,58,90,.3);background:rgba(31,58,90,.07);white-space:nowrap}
   .safety{margin-top:9px;font-size:.76rem;line-height:1.5;color:var(--warn);background:rgba(232,182,76,.16);border:1px solid rgba(138,90,31,.3);border-radius:12px;padding:9px 11px}
   .spark{margin-top:8px;display:block}
   .pct{font-family:var(--mono);font-weight:700;font-size:1.3rem;text-align:right;color:var(--ink);padding-top:1px}
@@ -326,6 +326,7 @@ const FIREBASE_CONFIG = {
       tapNameLabel:'Tap your name',
       tapName:'Tap your name first.',
       realWeight:'Enter a real weight.',
+      tied:'Tied',
       today:'Today',
       history:'History',
       rules:'Rules',
@@ -350,6 +351,7 @@ const FIREBASE_CONFIG = {
       tapNameLabel:'নিজের নাম চাপুন',
       tapName:'আগে নিজের নাম চাপুন।',
       realWeight:'সঠিক ওজন লিখুন।',
+      tied:'সমান',
       today:'আজ',
       history:'ইতিহাস',
       rules:'নিয়ম',
@@ -547,11 +549,12 @@ const FIREBASE_CONFIG = {
         sub+=spark(r.d);
       }
       const pctTxt=r.d?((r.d.pct>=0?'−':'+')+Math.abs(r.d.pct).toFixed(2)+'%'):'·';
-      const rankTxt=r.rank===null?'–':(rankCounts[r.rank]>1?'<span class="tie">T-'+r.rank+'</span>':r.rank);
+      const rankTxt=r.rank===null?'–':r.rank;
+      const tiedChip=r.rank!==null&&rankCounts[r.rank]>1?'<span class="chip tied">'+t('tied')+'</span>':'';
       div.innerHTML=
         '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
         '<div class="rank">'+rankTxt+'</div>'+
-        '<div class="who"><div class="name">'+r.name+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
+        '<div class="who"><div class="name">'+r.name+tiedChip+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
         '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>';
       board.appendChild(div);
     });
