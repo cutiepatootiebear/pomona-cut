@@ -170,6 +170,8 @@
   }
   button.add:active{transform:scale(.98)}
   .msg{grid-column:1/-1;font-weight:600;font-size:.88rem;color:var(--good);text-align:center;min-height:1.3em}
+  .wp.notif{width:100%;margin-top:2px;min-height:52px;font-size:.72rem;letter-spacing:0;line-height:1.45;white-space:normal;padding:12px 16px}
+  .notif-hint{margin-top:8px;font-family:var(--mono);font-size:.66rem;line-height:1.6;color:var(--ink-soft);text-align:center}
 
   /* log */
   .log{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
@@ -224,6 +226,8 @@
       <button class="add" id="add" data-i18n="logIt">Log it</button>
       <div class="msg" id="msg" aria-live="polite"></div>
     </div>
+    <button type="button" class="wp notif" id="notifBtn" hidden></button>
+    <div class="notif-hint" id="notifHint" hidden></div>
   </section>
 
   <section class="card">
@@ -268,12 +272,24 @@ const FIREBASE_CONFIG = {
   appId: "1:1045328654084:web:0e16474295030acb75aa51"
 };
 
+const VAPID_PUBLIC_KEY = "BBZ33VZ5Fcs9PZjZ3dz260bE9F6wst1FN_7ljUK7kJNNeMNYW0PKengCtivGQ-OQednAmgmbF6o33GyB_0Gm9ew";
+const PUSH_WORKER_URL = "https://pomona-push.cutiepatootie.workers.dev";
+
+function urlB64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=atob(base64);
+  const arr=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);
+  return arr;
+}
+
 (function(){
   const KEY='pomona-cut-v1';
   const PEOPLE=[{id:'jameel',name:'Jameel'},{id:'hibbu',name:'Hibbu'},{id:'mom',name:'Mom'}];
   const END=new Date(2026,7,7);
   let entries=[];
-  let docRef=null, applyingRemote=false;
+  let docRef=null, subsRef=null, applyingRemote=false;
 
   try{entries=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){entries=[]}
   // migrate old "sister" id → hibbu
@@ -288,21 +304,23 @@ const FIREBASE_CONFIG = {
       const db=firebase.firestore();
       db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
       docRef=db.collection('comp').doc('data');
+      subsRef=db.collection('comp').doc('subs');
       docRef.onSnapshot(snap=>{
         if(snap.exists){
           applyingRemote=true;
           entries=(snap.data().entries||[]).map(e=>e.who==='sister'?{...e,who:'hibbu'}:e).sort((a,b)=>a.when<b.when?-1:1);
           cache();render();
           applyingRemote=false;
-        }else if(entries.length){push()}
+        }else if(entries.length){push().catch(()=>{})}
       },()=>{});
     }catch(e){}
   }
   function push(){
     cache();
     if(docRef && !applyingRemote){
-      docRef.set({entries, updated:Date.now()}).catch(()=>{});
+      return docRef.set({entries, updated:Date.now()});
     }
+    return Promise.resolve();
   }
 
   // ---------- i18n ----------
@@ -328,7 +346,11 @@ const FIREBASE_CONFIG = {
       streakMsg:'Logged — {n} days straight, {name}. Consistency wins this.',
       trendingDown:'Logged — trending down. Keep going, {name}.',
       emptyLog:'No weigh-ins yet. Baseline morning: all three on the scale, back to back.',
-      paceCheck:'Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.'
+      paceCheck:'Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.',
+      notif_on:'🔔 Alerts on',
+      notif_off:'🔔 Alerts off — tap to enable',
+      notif_blocked:'🔕 Alerts blocked — enable in Settings › pomona-cut › Notifications',
+      notif_install:'Add to Home Screen first, then open from the icon to enable alerts'
     },
     bn:{
       daysLeft:'{n} দিন বাকি',
@@ -351,7 +373,11 @@ const FIREBASE_CONFIG = {
       streakMsg:'লিখে রাখা হয়েছে — টানা {n} দিন, {name}। লেগে থাকলেই জেতা যাবে।',
       trendingDown:'লিখে রাখা হয়েছে — ওজন কমছে। চালিয়ে যাও, {name}।',
       emptyLog:'এখনো কোনো ওজন নেওয়া হয়নি। শুরুর সকালে তিনজনই পরপর স্কেলে ওজন নাও।',
-      paceCheck:'গতি দেখো: সপ্তাহে ~১% এর বেশি কমছে। দারুণ চেষ্টা — ঠিকমতো খাওয়া আর পানি খাওয়া চালিয়ে যেও। ধীরে-সুস্থে এগোলেই ৭ আগস্টে জেতা যায়।'
+      paceCheck:'গতি দেখো: সপ্তাহে ~১% এর বেশি কমছে। দারুণ চেষ্টা — ঠিকমতো খাওয়া আর পানি খাওয়া চালিয়ে যেও। ধীরে-সুস্থে এগোলেই ৭ আগস্টে জেতা যায়।',
+      notif_on:'🔔 অ্যালার্ট চালু আছে',
+      notif_off:'🔔 অ্যালার্ট বন্ধ — চালু করতে চাপুন',
+      notif_blocked:'🔕 অ্যালার্ট ব্লক করা — Settings › pomona-cut › Notifications-এ গিয়ে চালু করুন',
+      notif_install:'আগে Home Screen-এ যোগ করুন, তারপর আইকন থেকে অ্যাপ খুলে অ্যালার্ট চালু করুন'
     }
   };
   const LANG_KEY='pomona-lang';
@@ -373,6 +399,7 @@ const FIREBASE_CONFIG = {
     $('rulesBn').hidden=l!=='bn';
     updateCountdown();
     render();
+    renderNotif();
   }
   $('langBtn').addEventListener('click',()=>setLang(lang==='bn'?'en':'bn'));
 
@@ -476,7 +503,7 @@ const FIREBASE_CONFIG = {
     entries=entries.filter(e=>!(e.who===who&&e.when===when));
     entries.push({who,when,wt});
     entries.sort((a,b)=>a.when<b.when?-1:1);
-    push();
+    push().then(()=>notifyOthers(who,wt)).catch(()=>{});
     $('wt').value='';
     const now=personData(who);
     const name=PEOPLE.find(p=>p.id===who).name;
@@ -562,7 +589,7 @@ const FIREBASE_CONFIG = {
       del.className='del';del.textContent='×';del.setAttribute('aria-label','Delete this entry');
       del.addEventListener('click',()=>{
         if(confirm('Delete '+p.name+' — '+e.wt.toFixed(1)+' lb on '+fmtDate(e.when)+'?')){
-          entries=entries.filter(x=>x!==e);push();render();
+          entries=entries.filter(x=>x!==e);push().catch(()=>{});render();
         }
       });
       item.appendChild(del);
@@ -575,11 +602,109 @@ const FIREBASE_CONFIG = {
     $('countdown').textContent=t('daysLeft',{n:days});
   }
 
+  // ---------- web push ----------
+  const DEVICE_KEY='pomona-device-id';
+  let deviceId=localStorage.getItem(DEVICE_KEY);
+  if(!deviceId){
+    deviceId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+    try{localStorage.setItem(DEVICE_KEY,deviceId)}catch(e){}
+  }
+  const NOTIF_WHO_KEY='pomona-notif-who';
+  let notifWho=localStorage.getItem(NOTIF_WHO_KEY);
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const pushSupported='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+  const notifBtn=$('notifBtn'), notifHint=$('notifHint');
+  let notifState='off'; // 'on' | 'off' | 'blocked'
+
+  function renderNotif(){
+    if(!(pushSupported&&isStandalone)){
+      notifBtn.hidden=true;
+      notifHint.hidden=false;
+      notifHint.textContent=t('notif_install');
+      return;
+    }
+    notifHint.hidden=true;
+    notifBtn.hidden=false;
+    notifBtn.textContent=t(notifState==='on'?'notif_on':notifState==='blocked'?'notif_blocked':'notif_off');
+    notifBtn.classList.toggle('on',notifState==='on');
+  }
+
+  function saveSubscription(sub){
+    const who=selectedWho||notifWho;
+    if(!subsRef||!who||!sub)return;
+    subsRef.set({[who+'_'+deviceId]:sub.toJSON()},{merge:true}).catch(()=>{});
+  }
+
+  function subscribePush(reg){
+    return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8Array(VAPID_PUBLIC_KEY)});
+  }
+
+  async function syncPushState(){
+    if(!(pushSupported&&isStandalone))return renderNotif();
+    try{
+      if(Notification.permission==='denied'){notifState='blocked';return renderNotif()}
+      const reg=await navigator.serviceWorker.ready;
+      let sub=await reg.pushManager.getSubscription();
+      // permission granted but subscription gone (iOS silently revokes) → resubscribe
+      if(!sub&&Notification.permission==='granted'){
+        try{sub=await subscribePush(reg)}catch(e){}
+      }
+      if(sub){saveSubscription(sub);notifState='on'}else{notifState='off'}
+    }catch(e){notifState='off'}
+    renderNotif();
+  }
+
+  notifBtn.addEventListener('click',async()=>{
+    if(!(pushSupported&&isStandalone)||notifState==='on')return;
+    const who=selectedWho||notifWho;
+    const msg=$('msg');
+    if(!who){msg.textContent=t('tapName');msg.style.color='var(--bad)';setTimeout(()=>{msg.textContent=''},3500);return}
+    try{
+      // permission must be requested inside the tap gesture on iOS
+      const perm=await Notification.requestPermission();
+      if(perm!=='granted'){notifState=perm==='denied'?'blocked':'off';renderNotif();return}
+      const reg=await navigator.serviceWorker.ready;
+      const sub=(await reg.pushManager.getSubscription())||await subscribePush(reg);
+      notifWho=who;
+      try{localStorage.setItem(NOTIF_WHO_KEY,who)}catch(e){}
+      saveSubscription(sub);
+      notifState='on';
+    }catch(e){notifState=Notification.permission==='denied'?'blocked':'off'}
+    renderNotif();
+  });
+
+  function notifyOthers(who,wt){
+    if(!subsRef)return;
+    subsRef.get().then(snap=>{
+      const data=snap.exists?snap.data():{};
+      const subs=[];
+      for(const k in data){
+        if(k.indexOf(who+'_')===0)continue;
+        if(data[k]&&data[k].endpoint)subs.push(data[k]);
+      }
+      if(!subs.length)return;
+      const name=PEOPLE.find(p=>p.id===who).name;
+      return fetch(PUSH_WORKER_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({title:'pomona-cut',body:name+' logged '+wt.toFixed(1)+' lb',url:'/pomona-cut/',subscriptions:subs})
+      }).then(r=>r.json()).then(res=>{
+        if(!res||!Array.isArray(res.stale)||!res.stale.length)return;
+        const del={};
+        for(const k in data){
+          if(data[k]&&res.stale.indexOf(data[k].endpoint)!==-1)del[k]=firebase.firestore.FieldValue.delete();
+        }
+        if(Object.keys(del).length)subsRef.set(del,{merge:true}).catch(()=>{});
+      });
+    }).catch(()=>{});
+  }
+
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
 
   setLang(lang);
+  syncPushState();
 })();
 </script>
 </body>
