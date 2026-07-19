@@ -688,7 +688,7 @@ function urlB64ToUint8Array(base64String){
       return fetch(PUSH_WORKER_URL,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({title:'pomona-cut',body:name+' logged '+wt.toFixed(1)+' lb',url:'/pomona-cut/',subscriptions:subs})
+        body:JSON.stringify({title:'Family Weight Loss',body:name+' logged '+wt.toFixed(1)+' lb',url:'/pomona-cut/',subscriptions:subs})
       }).then(r=>r.json()).then(res=>{
         if(!res||!Array.isArray(res.stale)||!res.stale.length)return;
         const del={};

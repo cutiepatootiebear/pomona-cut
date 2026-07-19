@@ -1,4 +1,4 @@
-const CACHE = 'pomona-cut-v20';
+const CACHE = 'pomona-cut-v21';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
