@@ -61,11 +61,8 @@
   .wrap{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 
   header{padding:8px 4px 4px;text-align:left}
-  .eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,242,238,.75)}
-  h1{font-family:var(--serif);font-weight:600;font-size:2rem;line-height:1.02;letter-spacing:-.02em;margin-top:8px;color:var(--cream)}
-  h1 em{font-style:italic;font-weight:500}
   /* chips + lang toggle share one row that must fit 390px phones — sizes are tight on purpose */
-  .dates{margin-top:12px;display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
+  .dates{display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
   .pill{
     display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
     font-family:var(--mono);font-size:.54rem;letter-spacing:.02em;text-transform:uppercase;
@@ -86,7 +83,7 @@
     box-shadow:0 2px 8px rgba(0,0,0,.25);
   }
   .lang .lg{font-size:.75rem}
-  :root[lang="bn"] .pill,:root[lang="bn"] .card h2,:root[lang="bn"] .chip,:root[lang="bn"] .streak,:root[lang="bn"] .stake,:root[lang="bn"] button.add,:root[lang="bn"] .tools button,:root[lang="bn"] .pct small,:root[lang="bn"] .wp-label{letter-spacing:0;text-transform:none}
+  :root[lang="bn"] .pill,:root[lang="bn"] .card h2,:root[lang="bn"] .chip,:root[lang="bn"] .streak,:root[lang="bn"] .stake,:root[lang="bn"] button.add,:root[lang="bn"] .pct small,:root[lang="bn"] .wp-label,:root[lang="bn"] .today-chip{letter-spacing:0;text-transform:none}
 
   .card{
     background:rgba(244,242,238,.6);
@@ -112,7 +109,8 @@
   }
   .row .bar{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,rgba(106,166,224,.28),rgba(106,166,224,0));transition:width .6s cubic-bezier(.2,.8,.2,1)}
   .row>*{position:relative}
-  .rank{font-family:var(--serif);font-weight:600;font-size:1.15rem;color:var(--ink-faint);padding-top:1px}
+  .rank{font-family:var(--serif);font-weight:600;font-size:1.15rem;color:var(--ink-faint);padding-top:1px;white-space:nowrap}
+  .rank .tie{font-size:.82rem;letter-spacing:-.02em}
   .row.first{background:var(--cream);border-color:rgba(43,42,40,.18);box-shadow:0 10px 30px -14px rgba(31,58,90,.5)}
   .row.first .rank{color:var(--ink)}
   .who .name{font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:8px;color:var(--ink)}
@@ -143,14 +141,21 @@
     appearance:none;-webkit-appearance:none;
   }
   select:focus,input:focus{background:#fff;box-shadow:0 0 0 3px rgba(31,58,90,.18)}
+  .date-row{display:flex;align-items:center;gap:8px}
+  .date-row input{flex:1;min-width:0}
+  .today-chip{
+    flex:none;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--good);background:rgba(15,107,69,.1);
+    border:1px solid rgba(15,107,69,.3);border-radius:999px;padding:5px 10px;
+  }
   .wp-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:-2px}
   .who-pills{display:flex;gap:8px}
   .wp{
     flex:1;min-height:56px;border-radius:15px;
     border:1.5px solid var(--ink);
-    background:#fff;color:var(--ink);
+    background:linear-gradient(#fff,#ececec);color:var(--ink);
     font-family:var(--mono);font-size:1rem;cursor:pointer;
-    box-shadow:0 2px 6px rgba(0,0,0,.18);
+    box-shadow:0 3px 8px rgba(0,0,0,.22);
   }
   .wp:active{box-shadow:none;transform:translateY(1px)}
   .wp.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
@@ -185,13 +190,6 @@
   .stake{margin-top:12px;padding:12px 15px;border-radius:13px;background:rgba(31,58,90,.08);border:1px solid rgba(31,58,90,.25);color:var(--shadow);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
   .truth{margin-top:12px;font-size:.84rem;color:var(--ink-faint);line-height:1.6}
 
-  .tools{display:flex;gap:10px}
-  .tools button{
-    flex:1;min-height:54px;cursor:pointer;
-    background:rgba(255,255,255,.6);border:1px solid rgba(43,42,40,.18);border-radius:999px;
-    color:var(--ink);font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
-  }
-
   .cf{position:fixed;top:-12px;border-radius:2px;pointer-events:none;z-index:99;animation:fall 1.6s ease-in forwards}
   @keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
   @media (prefers-reduced-motion:reduce){.row .bar{transition:none}.cf{display:none}}
@@ -209,8 +207,6 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Pomona · Jul 18 → Aug 7</div>
-    <h1>Waist <em>Management</em></h1>
     <div class="dates">
       <span class="pill" data-i18n="pctWins">% bodyweight lost wins</span>
       <span class="pill" id="countdown">— days left</span>
@@ -228,7 +224,10 @@
     <div class="form">
       <div class="wp-label" data-i18n="tapNameLabel" style="grid-column:1/-1">Tap your name</div>
       <div class="who-pills" role="radiogroup" aria-label="Who" style="grid-column:1/-1"><button type="button" class="wp" data-who="jameel">Jameel</button><button type="button" class="wp" data-who="hibbu">Hibbu</button><button type="button" class="wp" data-who="mom">Mom</button></div>
-      <input type="date" id="when" aria-label="Date" style="grid-column:1/-1">
+      <div class="date-row" style="grid-column:1/-1">
+        <input type="date" id="when" aria-label="Date">
+        <span class="today-chip" id="todayChip" data-i18n="today" hidden>Today</span>
+      </div>
       <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" data-i18n-ph="weightLb" aria-label="Weight in pounds" style="grid-column:1/-1">
       <button class="add" id="add" data-i18n="logIt">Log it</button>
       <div class="msg" id="msg" aria-live="polite"></div>
@@ -251,15 +250,6 @@
       <b>নিয়ম।</b> সবার জন্য একটাই স্কেল — বাসারটা — শুরু থেকে শেষ পর্যন্ত। যখন সময় পাও তখনই ওজন নাও, যতবার খুশি। প্রথম ওজনটাই তোমার বেসলাইন। <b>৭ আগস্টের</b> মধ্যে সবচেয়ে বেশি % কমালেই জয়।
       <div class="stake">পুরস্কার: বিজয়ী বেছে নেবে · বাকিরা খরচ দেবে</div>
       <div class="truth">প্রতিদিনের ওজন পানি, লবণ আর ঘুমের কারণে ১–৩ পাউন্ড ওঠানামা করে — এটা স্কেলের ব্যাপার, তোমার দোষ না। ডটেড লাইনটাই তোমার আসল ৭ দিনের গতি; সেটাই দেখো। স্বাস্থ্যকর গতি সপ্তাহে ১–২ পাউন্ড — না খেয়ে থাকার কোনো দরকার নেই, আর এই বাড়িতে কেউ দিনে ১,২০০ ক্যালরির কম খাবে না।</div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2 data-i18n="data">Data</h2>
-    <div class="tools">
-      <button id="exportBtn" data-i18n="backup">⬇ Backup</button>
-      <button id="importBtn" data-i18n="restore">⬆ Restore</button>
-      <input type="file" id="importFile" accept="application/json" hidden>
     </div>
   </section>
 
@@ -336,11 +326,9 @@ const FIREBASE_CONFIG = {
       tapNameLabel:'Tap your name',
       tapName:'Tap your name first.',
       realWeight:'Enter a real weight.',
+      today:'Today',
       history:'History',
       rules:'Rules',
-      data:'Data',
-      backup:'⬇ Backup',
-      restore:'⬆ Restore',
       logged:'Logged. Nice work, {name}.',
       milestone:'{name} just crossed {n}% — milestone! 🏆',
       streakMsg:'Logged — {n} days straight, {name}. Consistency wins this.',
@@ -362,11 +350,9 @@ const FIREBASE_CONFIG = {
       tapNameLabel:'নিজের নাম চাপুন',
       tapName:'আগে নিজের নাম চাপুন।',
       realWeight:'সঠিক ওজন লিখুন।',
+      today:'আজ',
       history:'ইতিহাস',
       rules:'নিয়ম',
-      data:'ডেটা',
-      backup:'⬇ ব্যাকআপ',
-      restore:'⬆ ফিরিয়ে আনুন',
       logged:'লিখে রাখা হয়েছে। বাহ, {name}!',
       milestone:'{name} {n}% পার করেছে — মাইলফলক! 🏆',
       streakMsg:'লিখে রাখা হয়েছে — টানা {n} দিন, {name}। লেগে থাকলেই জেতা যাবে।',
@@ -399,6 +385,10 @@ const FIREBASE_CONFIG = {
 
   const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   $('when').value=todayStr();
+  const updateTodayChip=()=>{$('todayChip').hidden=$('when').value!==todayStr()};
+  $('when').addEventListener('input',updateTodayChip);
+  $('when').addEventListener('change',updateTodayChip);
+  updateTodayChip();
 
   function confetti(){
     const colors=['#f4f2ee','#1f3a5a','#7ddfa8','#e8b64c','#fff'];
@@ -511,34 +501,6 @@ const FIREBASE_CONFIG = {
     render();
   });
 
-  // ---------- export / import ----------
-  $('exportBtn').addEventListener('click',()=>{
-    const blob=new Blob([JSON.stringify({entries,exported:todayStr()},null,2)],{type:'application/json'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='pomona-cut-backup-'+todayStr()+'.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-  $('importBtn').addEventListener('click',()=>$('importFile').click());
-  $('importFile').addEventListener('change',e=>{
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();
-    r.onload=()=>{
-      try{
-        const data=JSON.parse(r.result);
-        const list=Array.isArray(data)?data:data.entries;
-        if(!Array.isArray(list))throw 0;
-        if(confirm('Replace current data with '+list.length+' entries from backup?')){
-          entries=list.map(x=>x.who==='sister'?{...x,who:'hibbu'}:x).sort((a,b)=>a.when<b.when?-1:1);
-          push();render();
-        }
-      }catch(err){alert('Not a valid backup file.')}
-      e.target.value='';
-    };
-    r.readAsText(f);
-  });
-
   // ---------- render ----------
   function render(){
     const rows=PEOPLE.map(p=>({...p,d:personData(p.id)}));
@@ -548,11 +510,22 @@ const FIREBASE_CONFIG = {
       if(!b.d)return -1;
       return b.d.pct-a.d.pct;
     });
+    // competition ranking: ties (same displayed %) share a rank shown as "T-n", next rank skips
+    let prevKey=null,rank=0;
+    rows.forEach((r,i)=>{
+      if(!r.d){r.rank=null;return}
+      const key=r.d.pct.toFixed(2);
+      if(key!==prevKey){rank=i+1;prevKey=key}
+      r.rank=rank;
+    });
+    const rankCounts={};
+    rows.forEach(r=>{if(r.rank!==null)rankCounts[r.rank]=(rankCounts[r.rank]||0)+1});
     const maxPct=Math.max(.001,...rows.map(r=>r.d?r.d.pct:0));
     const board=$('board');board.innerHTML='';
     rows.forEach((r,i)=>{
       const div=document.createElement('div');
-      div.className='row'+(i===0&&r.d?' first':'');
+      const isFirst=r.rank===1;
+      div.className='row'+(isFirst?' first':'');
       let sub=t('noWeighIns'), chips='', safety='', streakBadge='';
       if(r.d){
         sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' lb · '+fmtDate(r.d.cur.when);
@@ -574,11 +547,12 @@ const FIREBASE_CONFIG = {
         sub+=spark(r.d);
       }
       const pctTxt=r.d?((r.d.pct>=0?'−':'+')+Math.abs(r.d.pct).toFixed(2)+'%'):'·';
+      const rankTxt=r.rank===null?'–':(rankCounts[r.rank]>1?'<span class="tie">T-'+r.rank+'</span>':r.rank);
       div.innerHTML=
         '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
-        '<div class="rank">'+(i+1)+'</div>'+
+        '<div class="rank">'+rankTxt+'</div>'+
         '<div class="who"><div class="name">'+r.name+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
-        '<div class="pct'+(i===0&&r.d?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>';
+        '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>';
       board.appendChild(div);
     });
 
