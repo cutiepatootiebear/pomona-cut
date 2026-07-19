@@ -32,7 +32,7 @@
     --mono:'Roboto Mono',ui-monospace,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html{font-size:19px}
+  html{font-size:21px}
   body{
     min-height:100dvh;
     font-family:var(--sans);color:var(--cream);
@@ -65,7 +65,7 @@
   .dates{display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
   .pill{
     display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
-    font-family:var(--mono);font-size:.54rem;letter-spacing:.02em;text-transform:uppercase;
+    font-family:var(--mono);font-size:.48rem;letter-spacing:.02em;text-transform:uppercase;
     color:var(--cream);
     border:1px solid rgba(244,242,238,.35);border-radius:999px;padding:6px 9px;
     background:rgba(244,242,238,.12);
@@ -110,20 +110,20 @@
   .row .bar{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,rgba(106,166,224,.28),rgba(106,166,224,0));transition:width .6s cubic-bezier(.2,.8,.2,1)}
   .row>*{position:relative}
   .rank{font-family:var(--serif);font-weight:600;font-size:1.15rem;color:var(--ink-faint);padding-top:1px;white-space:nowrap}
+  .rank .tie{font-size:.66rem;letter-spacing:0}
   .row.first{background:var(--cream);border-color:rgba(43,42,40,.18);box-shadow:0 10px 30px -14px rgba(31,58,90,.5)}
   .row.first .rank{color:var(--ink)}
-  .who .name{font-weight:700;font-size:1.05rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;color:var(--ink)}
+  .who .name{font-weight:700;font-size:1.2rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;color:var(--ink)}
   .streak{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;white-space:nowrap;color:var(--warn);border:1px solid rgba(138,90,31,.35);background:rgba(232,182,76,.18);border-radius:999px;padding:2px 8px}
   .who .sub{font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-top:4px}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .chip{display:inline-block;font-family:var(--mono);font-size:.64rem;padding:4px 10px;border-radius:999px;border:1px solid rgba(43,42,40,.14);color:var(--ink-soft);background:rgba(255,255,255,.5)}
+  .chip{display:inline-block;font-family:var(--mono);font-size:.7rem;padding:4px 10px;border-radius:999px;border:1px solid rgba(43,42,40,.14);color:var(--ink-soft);background:rgba(255,255,255,.5)}
   .chip.down{color:var(--good);border-color:rgba(15,107,69,.3);background:rgba(15,107,69,.08)}
   .chip.up{color:var(--bad);border-color:rgba(163,69,47,.3);background:rgba(163,69,47,.08)}
   .chip.proj{color:var(--shadow);border-color:rgba(31,58,90,.3);background:rgba(31,58,90,.07)}
-  .chip.tied{color:var(--shadow);border-color:rgba(31,58,90,.3);background:rgba(31,58,90,.07);white-space:nowrap}
   .safety{margin-top:9px;font-size:.76rem;line-height:1.5;color:var(--warn);background:rgba(232,182,76,.16);border:1px solid rgba(138,90,31,.3);border-radius:12px;padding:9px 11px}
   .spark{margin-top:8px;display:block}
-  .pct{font-family:var(--mono);font-weight:700;font-size:1.3rem;text-align:right;color:var(--ink);padding-top:1px}
+  .pct{font-family:var(--mono);font-weight:700;font-size:1.5rem;text-align:right;color:var(--ink);padding-top:1px}
   .pct small{display:block;font-weight:400;font-size:.56rem;color:var(--ink-faint);letter-spacing:.14em;margin-top:3px}
   .pct.leading{color:var(--good)}
 
@@ -148,17 +148,17 @@
     color:var(--good);background:rgba(15,107,69,.1);
     border:1px solid rgba(15,107,69,.3);border-radius:999px;padding:5px 10px;
   }
-  .wp-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:-2px}
+  .wp-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:-2px}
   .who-pills{display:flex;gap:8px}
   .wp{
-    flex:1;min-height:56px;border-radius:15px;
-    border:1.5px solid var(--ink);
-    background:linear-gradient(#fff,#ececec);color:var(--ink);
-    font-family:var(--mono);font-size:1rem;cursor:pointer;
-    box-shadow:0 3px 8px rgba(0,0,0,.22);
+    flex:1;min-height:56px;border-radius:16px;
+    border:none;
+    background:#fff;color:var(--ink);
+    font-family:var(--mono);font-size:1.1rem;cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,.12),0 6px 16px rgba(43,42,40,.16);
   }
-  .wp:active{box-shadow:none;transform:translateY(1px)}
-  .wp.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .wp:active{box-shadow:0 1px 2px rgba(0,0,0,.12);transform:translateY(1px)}
+  .wp.on{background:var(--ink);color:var(--cream)}
   input::placeholder{color:rgba(43,42,40,.35)}
   select option{color:#111}
   button.add{
@@ -188,7 +188,6 @@
   .rules{font-size:.92rem;color:var(--ink-soft);line-height:1.65}
   .rules b{color:var(--ink)}
   .stake{margin-top:12px;padding:12px 15px;border-radius:13px;background:rgba(31,58,90,.08);border:1px solid rgba(31,58,90,.25);color:var(--shadow);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
-  .truth{margin-top:12px;font-size:.84rem;color:var(--ink-faint);line-height:1.6}
 
   .cf{position:fixed;top:-12px;border-radius:2px;pointer-events:none;z-index:99;animation:fall 1.6s ease-in forwards}
   @keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
@@ -242,14 +241,12 @@
   <section class="card">
     <h2 data-i18n="rules">Rules</h2>
     <div class="rules" id="rulesEn">
-      <b>Rules.</b> One scale — the one at home — for everyone, start to finish. Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins.
-      <div class="stake">Stake: winner picks · losers fund it</div>
-      <div class="truth">Daily numbers bounce 1–3 lb from water, salt, and sleep — that's the scale, not you. The dotted line is your real 7-day trend; judge that. Healthy pace is ~1–2 lb a week — nobody wins a trophy worth crash-dieting for, and nobody eats under 1,200 calories a day in this house.</div>
+      <b>Rules.</b> One scale — the one at home — for everyone, start to finish. Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins. % means percent of your own starting weight — so every size competes fairly.
+      <div class="stake">Winner gets $100 from each loser.</div>
     </div>
     <div class="rules" id="rulesBn" hidden lang="bn">
-      <b>নিয়ম।</b> সবার জন্য একটাই স্কেল — বাসারটা — শুরু থেকে শেষ পর্যন্ত। যখন সময় পাও তখনই ওজন নাও, যতবার খুশি। প্রথম ওজনটাই তোমার বেসলাইন। <b>৭ আগস্টের</b> মধ্যে সবচেয়ে বেশি % কমালেই জয়।
-      <div class="stake">পুরস্কার: বিজয়ী বেছে নেবে · বাকিরা খরচ দেবে</div>
-      <div class="truth">প্রতিদিনের ওজন পানি, লবণ আর ঘুমের কারণে ১–৩ পাউন্ড ওঠানামা করে — এটা স্কেলের ব্যাপার, তোমার দোষ না। ডটেড লাইনটাই তোমার আসল ৭ দিনের গতি; সেটাই দেখো। স্বাস্থ্যকর গতি সপ্তাহে ১–২ পাউন্ড — না খেয়ে থাকার কোনো দরকার নেই, আর এই বাড়িতে কেউ দিনে ১,২০০ ক্যালরির কম খাবে না।</div>
+      <b>নিয়ম।</b> সবার জন্য একটাই স্কেল — বাসারটা — শুরু থেকে শেষ পর্যন্ত। যখন সময় পাও তখনই ওজন নাও, যতবার খুশি। প্রথম ওজনটাই তোমার বেসলাইন। <b>৭ আগস্টের</b> মধ্যে সবচেয়ে বেশি % কমালেই জয়। % মানে নিজের শুরুর ওজনের শতাংশ — তাই সবার জন্য সমান লড়াই।
+      <div class="stake">বিজয়ী প্রত্যেক পরাজিতের কাছ থেকে $১০০ পাবে।</div>
     </div>
   </section>
 
@@ -326,7 +323,7 @@ const FIREBASE_CONFIG = {
       tapNameLabel:'Tap your name',
       tapName:'Tap your name first.',
       realWeight:'Enter a real weight.',
-      tied:'Tied',
+      tied:'Tie',
       today:'Today',
       history:'History',
       rules:'Rules',
@@ -549,12 +546,11 @@ const FIREBASE_CONFIG = {
         sub+=spark(r.d);
       }
       const pctTxt=r.d?((r.d.pct>=0?'−':'+')+Math.abs(r.d.pct).toFixed(2)+'%'):'·';
-      const rankTxt=r.rank===null?'–':r.rank;
-      const tiedChip=r.rank!==null&&rankCounts[r.rank]>1?'<span class="chip tied">'+t('tied')+'</span>':'';
+      const rankTxt=r.rank===null?'–':(rankCounts[r.rank]>1?'<span class="tie">'+t('tied')+'</span>':r.rank);
       div.innerHTML=
         '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
         '<div class="rank">'+rankTxt+'</div>'+
-        '<div class="who"><div class="name">'+r.name+tiedChip+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
+        '<div class="who"><div class="name">'+r.name+streakBadge+'</div><div class="sub">'+sub+'</div>'+chips+safety+'</div>'+
         '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>'+t('lost')+'</small></div>';
       board.appendChild(div);
     });
