@@ -96,8 +96,6 @@
     color:var(--ink);
   }
   .card h2{font-family:var(--mono);font-weight:500;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .card h2 .h2sub{letter-spacing:0;text-transform:none;font-family:var(--sans);font-weight:500;font-size:.78rem;color:var(--ink-faint)}
-
   /* leaderboard */
   .board{display:flex;flex-direction:column;gap:10px}
   .row{
@@ -229,7 +227,7 @@
   </section>
 
   <section class="card">
-    <h2><span data-i18n="leaderboard">Leaderboard</span> <span class="h2sub" data-i18n="leaderboardSub">most % lost since day one</span></h2>
+    <h2 data-i18n="leaderboard">Leaderboard</h2>
     <div class="board" id="board"></div>
   </section>
 
@@ -312,7 +310,6 @@ const FIREBASE_CONFIG = {
     en:{
       daysLeft:'{n} days left',
       leaderboard:'Leaderboard',
-      leaderboardSub:'most % lost since day one',
       noWeighIns:'no weigh-ins yet',
       lost:'LOST',
       trend:'trend',
@@ -336,7 +333,6 @@ const FIREBASE_CONFIG = {
     bn:{
       daysLeft:'{n} দিন বাকি',
       leaderboard:'লিডারবোর্ড',
-      leaderboardSub:'প্রথম দিন থেকে যত % কমেছে',
       noWeighIns:'এখনো ওজন নেওয়া হয়নি',
       lost:'কমেছে',
       trend:'গতি',
