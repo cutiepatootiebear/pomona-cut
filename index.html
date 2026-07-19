@@ -64,21 +64,29 @@
   .eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,242,238,.75)}
   h1{font-family:var(--serif);font-weight:600;font-size:2rem;line-height:1.02;letter-spacing:-.02em;margin-top:8px;color:var(--cream)}
   h1 em{font-style:italic;font-weight:500}
-  .dates{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  /* chips + lang toggle share one row that must fit 390px phones — sizes are tight on purpose */
+  .dates{margin-top:12px;display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
   .pill{
-    display:inline-flex;align-items:center;gap:7px;
-    font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
+    font-family:var(--mono);font-size:.54rem;letter-spacing:.02em;text-transform:uppercase;
     color:var(--cream);
-    border:1px solid rgba(244,242,238,.35);border-radius:999px;padding:7px 14px;
+    border:1px solid rgba(244,242,238,.35);border-radius:999px;padding:6px 9px;
     background:rgba(244,242,238,.12);
     backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
   }
-  #dot{width:9px;height:9px;border-radius:50%;background:#e8b64c;flex:none}
-  #dot.live{background:#7ddfa8}
   /* letter-spacing breaks Bengali glyph shaping (বাংলা → বাং লা) — zero it wherever Bangla renders */
-  #langBtn{margin-left:auto;cursor:pointer;min-height:44px;font-family:var(--sans);font-weight:600;letter-spacing:0;text-transform:none}
-  :root[lang="bn"] .pill,:root[lang="bn"] .card h2,:root[lang="bn"] .chip,:root[lang="bn"] .streak,:root[lang="bn"] .stake,:root[lang="bn"] button.add,:root[lang="bn"] .tools button,:root[lang="bn"] .pct small{letter-spacing:0;text-transform:none}
+  .lang{
+    margin-left:auto;flex:none;cursor:pointer;
+    display:inline-flex;align-items:center;gap:5px;
+    min-height:44px;padding:7px 11px;
+    font-family:var(--sans);font-weight:600;font-size:.66rem;letter-spacing:0;text-transform:none;
+    color:var(--cream);background:var(--ink);
+    border:none;border-radius:999px;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+  }
+  .lang .lg{font-size:.75rem}
+  :root[lang="bn"] .pill,:root[lang="bn"] .card h2,:root[lang="bn"] .chip,:root[lang="bn"] .streak,:root[lang="bn"] .stake,:root[lang="bn"] button.add,:root[lang="bn"] .tools button,:root[lang="bn"] .pct small,:root[lang="bn"] .wp-label{letter-spacing:0;text-transform:none}
 
   .card{
     background:rgba(244,242,238,.6);
@@ -123,19 +131,28 @@
 
   /* form */
   .form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  /* inputs stay flat + borderless so they read differently from the pressable name buttons */
   select,input[type=date],input[type=number]{
     width:100%;min-height:58px;
     background:rgba(255,255,255,.65);
-    border:1.5px solid rgba(43,42,40,.18);
+    border:none;
     border-radius:15px;
     color:var(--ink);
     font-family:var(--mono);font-size:1rem;
     padding:14px 12px;outline:none;
     appearance:none;-webkit-appearance:none;
   }
-  select:focus,input:focus{border-color:var(--shadow);background:#fff;box-shadow:0 0 0 3px rgba(31,58,90,.18)}
+  select:focus,input:focus{background:#fff;box-shadow:0 0 0 3px rgba(31,58,90,.18)}
+  .wp-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:-2px}
   .who-pills{display:flex;gap:8px}
-  .wp{flex:1;min-height:56px;border-radius:15px;border:1.5px solid rgba(43,42,40,.18);background:rgba(255,255,255,.65);color:var(--ink);font-family:var(--mono);font-size:1rem;cursor:pointer}
+  .wp{
+    flex:1;min-height:56px;border-radius:15px;
+    border:1.5px solid var(--ink);
+    background:#fff;color:var(--ink);
+    font-family:var(--mono);font-size:1rem;cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,.18);
+  }
+  .wp:active{box-shadow:none;transform:translateY(1px)}
   .wp.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
   input::placeholder{color:rgba(43,42,40,.35)}
   select option{color:#111}
@@ -197,8 +214,7 @@
     <div class="dates">
       <span class="pill" data-i18n="pctWins">% bodyweight lost wins</span>
       <span class="pill" id="countdown">— days left</span>
-      <span class="pill" aria-label="Sync status" id="syncPill"><span id="dot"></span></span>
-      <button type="button" class="pill" id="langBtn" lang="bn">বাংলা</button>
+      <button type="button" class="lang" id="langBtn"><span class="lg" aria-hidden="true">🌐</span><span id="langLabel" lang="bn">বাংলা</span></button>
     </div>
   </header>
 
@@ -210,6 +226,7 @@
   <section class="card">
     <h2 data-i18n="logWeight">Log weight</h2>
     <div class="form">
+      <div class="wp-label" data-i18n="tapNameLabel" style="grid-column:1/-1">Tap your name</div>
       <div class="who-pills" role="radiogroup" aria-label="Who" style="grid-column:1/-1"><button type="button" class="wp" data-who="jameel">Jameel</button><button type="button" class="wp" data-who="hibbu">Hibbu</button><button type="button" class="wp" data-who="mom">Mom</button></div>
       <input type="date" id="when" aria-label="Date" style="grid-column:1/-1">
       <input type="number" id="wt" inputmode="decimal" step="0.1" placeholder="Weight (lb)" data-i18n-ph="weightLb" aria-label="Weight in pounds" style="grid-column:1/-1">
@@ -280,7 +297,6 @@ const FIREBASE_CONFIG = {
   const cache=()=>{try{localStorage.setItem(KEY,JSON.stringify(entries))}catch(e){}};
 
   // ---------- Firebase sync ----------
-  const dot=$('dot');
   if(FIREBASE_CONFIG && window.firebase){
     try{
       firebase.initializeApp(FIREBASE_CONFIG);
@@ -294,9 +310,7 @@ const FIREBASE_CONFIG = {
           cache();render();
           applyingRemote=false;
         }else if(entries.length){push()}
-        dot.className='live';
-        $('syncPill').setAttribute('aria-label','Synced');
-      },err=>{dot.className='';});
+      },()=>{});
     }catch(e){}
   }
   function push(){
@@ -319,6 +333,7 @@ const FIREBASE_CONFIG = {
       logWeight:'Log weight',
       weightLb:'Weight (lb)',
       logIt:'Log it',
+      tapNameLabel:'Tap your name',
       tapName:'Tap your name first.',
       realWeight:'Enter a real weight.',
       history:'History',
@@ -344,6 +359,7 @@ const FIREBASE_CONFIG = {
       logWeight:'ওজন লিখুন',
       weightLb:'ওজন (পাউন্ড)',
       logIt:'লিখে রাখুন',
+      tapNameLabel:'নিজের নাম চাপুন',
       tapName:'আগে নিজের নাম চাপুন।',
       realWeight:'সঠিক ওজন লিখুন।',
       history:'ইতিহাস',
@@ -372,8 +388,8 @@ const FIREBASE_CONFIG = {
     document.documentElement.lang=l;
     document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
     document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});
-    $('langBtn').textContent=l==='bn'?'English':'বাংলা';
-    $('langBtn').setAttribute('lang',l==='bn'?'en':'bn');
+    $('langLabel').textContent=l==='bn'?'English':'বাংলা';
+    $('langLabel').setAttribute('lang',l==='bn'?'en':'bn');
     $('rulesEn').hidden=l==='bn';
     $('rulesBn').hidden=l!=='bn';
     updateCountdown();
