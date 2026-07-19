@@ -1,6 +1,6 @@
 {
-  "name": "Waist Management",
-  "short_name": "Waist Management",
+  "name": "Weight Loss Competition",
+  "short_name": "Weight Loss",
   "description": "3-week family weight loss competition tracker",
   "start_url": "./index.html",
   "scope": "./",
