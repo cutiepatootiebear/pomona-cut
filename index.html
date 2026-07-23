@@ -179,8 +179,9 @@
   }
   .toast.show{opacity:1}
 
-  /* log */
-  .log{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+  /* log — no inner scrollbox: nested scroll areas trap the thumb on mobile,
+     so the list flows with the page and long histories collapse behind a toggle */
+  .log{display:flex;flex-direction:column;gap:8px}
   .log-item{
     display:flex;align-items:center;gap:10px;
     font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);
@@ -190,6 +191,13 @@
   .log-item .lw{margin-left:auto;color:var(--ink);font-weight:700}
   .log-item .del{background:none;border:none;color:var(--bad);font-size:1.15rem;cursor:pointer;padding:8px 12px;min-width:44px;min-height:44px}
   .empty{font-size:.9rem;color:var(--ink-soft);text-align:center;padding:10px;line-height:1.5}
+  .log-more{
+    min-height:52px;cursor:pointer;margin-top:2px;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);background:rgba(255,255,255,.65);
+    border:1px solid rgba(43,42,40,.14);border-radius:999px;padding:12px;
+  }
+  .log-more:active{transform:scale(.98)}
 
   /* rules */
   .rules{font-size:.92rem;color:var(--ink-soft);line-height:1.65}
@@ -292,6 +300,8 @@ function urlB64ToUint8Array(base64String){
   const END=new Date(2026,7,7);
   let entries=[];
   let docRef=null, subsRef=null, applyingRemote=false;
+  const LOG_RECENT=10;
+  let logExpanded=false;
 
   try{entries=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){entries=[]}
   // migrate old "sister" id → hibbu
@@ -501,7 +511,9 @@ function urlB64ToUint8Array(base64String){
 
     const log=$('log');log.innerHTML='';
     if(!entries.length){log.innerHTML='<div class="empty">No weigh-ins yet. Baseline morning: all three on the scale, back to back.</div>';return}
-    [...entries].reverse().forEach(e=>{
+    const all=[...entries].reverse();
+    const shown=logExpanded?all:all.slice(0,LOG_RECENT);
+    shown.forEach(e=>{
       const p=PEOPLE.find(x=>x.id===e.who);
       if(!p)return;
       const item=document.createElement('div');
@@ -517,6 +529,17 @@ function urlB64ToUint8Array(base64String){
       item.appendChild(del);
       log.appendChild(item);
     });
+    if(all.length>LOG_RECENT){
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='log-more';
+      btn.textContent=logExpanded?'Show recent only':'Show all '+all.length+' weigh-ins';
+      btn.addEventListener('click',()=>{
+        logExpanded=!logExpanded;
+        render();
+        if(!logExpanded)$('log').closest('.card').scrollIntoView({block:'nearest'});
+      });
+      log.appendChild(btn);
+    }
   }
 
   function updateCountdown(){
