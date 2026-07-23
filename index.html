@@ -106,7 +106,6 @@
   .chip{display:inline-block;font-family:var(--mono);font-size:.62rem;padding:4px 10px;border-radius:999px;border:1px solid rgba(43,42,40,.14);color:var(--ink-soft);background:rgba(255,255,255,.5)}
   .chip.down{color:var(--good);border-color:rgba(15,107,69,.3);background:rgba(15,107,69,.08)}
   .chip.up{color:var(--bad);border-color:rgba(163,69,47,.3);background:rgba(163,69,47,.08)}
-  .chip.proj{color:var(--shadow);border-color:rgba(31,58,90,.3);background:rgba(31,58,90,.07)}
   .safety{margin-top:9px;font-size:.76rem;line-height:1.5;color:var(--warn);background:rgba(232,182,76,.16);border:1px solid rgba(138,90,31,.3);border-radius:12px;padding:9px 11px}
   .spark{margin-top:8px;display:block}
   .pct{font-family:var(--mono);font-weight:700;font-size:1.45rem;text-align:right;color:var(--ink);padding-top:1px}
@@ -384,7 +383,7 @@ function urlB64ToUint8Array(base64String){
     });
     const trendNow=trend[trend.length-1].wt;
     const trendPct=(base.wt-trendNow)/base.wt*100;
-    let slope=null, proj=null, projPct=null, rateWk=null;
+    let slope=null, rateWk=null;
     if(list.length>=3){
       const pts=list.slice(-10).map(e=>[dayNum(e.when),e.wt]);
       const n=pts.length;
@@ -393,9 +392,6 @@ function urlB64ToUint8Array(base64String){
       const den=pts.reduce((s,p)=>s+(p[0]-mx)**2,0);
       if(den>0){
         slope=num/den;
-        const daysToEnd=Math.max(0,Math.round((END-new Date())/86400000));
-        proj=Math.max(0,cur.wt+slope*daysToEnd);
-        projPct=(base.wt-proj)/base.wt*100;
         rateWk=-slope*7/base.wt*100;
       }
     }
@@ -405,7 +401,7 @@ function urlB64ToUint8Array(base64String){
     if(!days.has(iso(d))) d.setDate(d.getDate()-1);
     while(days.has(iso(d))){streak++;d.setDate(d.getDate()-1)}
     const spanDays=dayNum(cur.when)-dayNum(base.when);
-    return {list,base,cur,pct:(base.wt-cur.wt)/base.wt*100,trend,trendPct,slope,proj,projPct,rateWk,streak,spanDays};
+    return {list,base,cur,pct:(base.wt-cur.wt)/base.wt*100,trend,trendPct,slope,rateWk,streak,spanDays};
   }
 
   function spark(d){
@@ -503,9 +499,6 @@ function urlB64ToUint8Array(base64String){
           const prev=r.d.list[r.d.list.length-2];
           const ch=r.d.cur.wt-prev.wt;
           c.push('<span class="chip '+(ch<=0?'down':'up')+'">'+(ch<=0?'▼ ':'▲ +')+Math.abs(ch).toFixed(1)+' lb</span>');
-        }
-        if(r.d.proj!==null){
-          c.push('<span class="chip proj">Aug 7 ≈ '+r.d.proj.toFixed(1)+' lb ('+(r.d.projPct>=0?'−':'+')+Math.abs(r.d.projPct).toFixed(1)+'%)</span>');
         }
         chips='<div class="chips">'+c.join('')+'</div>';
         if(r.d.rateWk!==null&&r.d.spanDays>=7&&r.d.rateWk>1.4){
