@@ -202,6 +202,11 @@
   /* rules */
   .rules{font-size:.92rem;color:var(--ink-soft);line-height:1.65}
   .rules b{color:var(--ink)}
+  .rules p{margin-bottom:11px}
+  .ex{margin:2px 0 12px;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.5);border:1px solid rgba(43,42,40,.12)}
+  .ex .xr{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:.7rem;padding:3px 0}
+  .ex .xr b{white-space:nowrap}
+  .ex .xnote{font-size:.78rem;color:var(--ink-soft);margin-top:7px;line-height:1.55}
   .stake{margin-top:12px;padding:12px 15px;border-radius:13px;background:rgba(31,58,90,.08);border:1px solid rgba(31,58,90,.25);color:var(--shadow);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
 
   .cf{position:fixed;top:-12px;border-radius:2px;pointer-events:none;z-index:99;animation:fall 1.6s ease-in forwards}
@@ -250,7 +255,17 @@
   <section class="card">
     <h2>Rules</h2>
     <div class="rules">
-      <b>Rules.</b> Weigh in whenever you have time, as often as you like. First logged weight = your baseline. Most % lost by <b>Aug 7</b> wins. We count % instead of pounds because raw pounds favors the biggest person — a heavier body drops more pounds for the same effort. % of your own starting weight makes it an even race at every size.
+      <p><b>The basics.</b> Weigh in whenever you have time, as often as you like. Your first weigh-in becomes your starting weight. Whoever loses the biggest <b>% of their own starting weight</b> by <b>Aug 7</b> wins.</p>
+      <p><b>What "% lost" means.</b> Nothing fancy — it's how much you lost compared to where <b>you</b> started. Lose 2 lb from 200 lb, that's 1%. Lose 2 lb from 100 lb, that's 2% — same pounds, but a bigger bite out of a smaller body.</p>
+      <p><b>Why not just count pounds?</b> Bigger bodies drop pounds faster — they burn more calories doing everything, even sleeping. If we counted raw pounds, the biggest person would win on autopilot. % makes the same effort worth the same score at every size.</p>
+      <p><b>Example — same effort, fair fight.</b> Two people work equally hard and each lose 5% of themselves:</p>
+      <div class="ex">
+        <div class="xr"><span>Starts 220 lb, loses 11 lb</span><b>−5%</b></div>
+        <div class="xr"><span>Starts 140 lb, loses 7 lb</span><b>−5%</b></div>
+        <div class="xnote">11 lb vs 7 lb — and it's a tie. Both lost the same slice of themselves. That's the whole idea.</div>
+      </div>
+      <p><b>What 1% means for each of us</b> — from your real starting weights:</p>
+      <div class="ex" id="onepct"></div>
       <div class="stake">Winner gets $100 from each loser.</div>
     </div>
   </section>
@@ -508,6 +523,15 @@ function urlB64ToUint8Array(base64String){
         '<div class="detail"><div class="sub">'+sub+'</div>'+chips+safety+'</div>';
       board.appendChild(div);
     });
+
+    // personalized "1% = X lb" rows in Rules, from real baselines
+    const one=$('onepct');
+    const oneRows=PEOPLE.map(p=>{
+      const d=rows.find(r=>r.id===p.id).d;
+      if(!d)return '<div class="xr"><span>'+p.name+' — weigh in once and this fills in</span></div>';
+      return '<div class="xr"><span>'+p.name+': started '+d.base.wt.toFixed(1)+' lb</span><b>1% = '+(d.base.wt/100).toFixed(1)+' lb</b></div>';
+    }).join('');
+    one.innerHTML=oneRows+'<div class="xnote">So if we each lose our own 1%, we\'re dead even — no matter whose pounds were bigger. Beat the others\' % and you win.</div>';
 
     const log=$('log');log.innerHTML='';
     if(!entries.length){log.innerHTML='<div class="empty">No weigh-ins yet. Baseline morning: all three on the scale, back to back.</div>';return}
