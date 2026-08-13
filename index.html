@@ -97,7 +97,7 @@
     border-radius:18px;border:1px solid rgba(43,42,40,.1);
     background:rgba(255,255,255,.5);
     padding:15px;
-    display:grid;grid-template-columns:34px 1fr auto;align-items:start;gap:2px 10px;
+    display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:start;gap:2px 10px;
   }
   .row .bar{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,rgba(106,166,224,.28),rgba(106,166,224,0));transition:width .6s cubic-bezier(.2,.8,.2,1)}
   .row>*{position:relative}
@@ -110,8 +110,22 @@
   .detail{grid-column:2/-1}
   .sub{font-family:var(--mono);font-size:min(.85rem,4.5vw);color:var(--ink-soft);margin-top:2px;white-space:nowrap}
   .sub.wrap{white-space:normal;line-height:1.5}
-  .safety{margin-top:9px;font-size:.76rem;line-height:1.5;color:var(--warn);background:rgba(232,182,76,.16);border:1px solid rgba(138,90,31,.3);border-radius:12px;padding:9px 11px}
   .spark{margin-top:8px;display:block}
+  /* guardrail chips — warm, dismissible nudges */
+  .gchip{
+    display:flex;align-items:flex-start;gap:6px;margin-top:9px;
+    background:var(--cream);border:1px solid rgba(43,42,40,.14);border-radius:12px;
+    padding:9px 4px 9px 12px;font-size:.72rem;line-height:1.55;color:var(--ink-soft);
+  }
+  .gchip .gx{
+    flex:none;background:none;border:none;cursor:pointer;
+    color:var(--ink-faint);font-size:.78rem;line-height:1;
+    padding:6px 12px;min-width:40px;min-height:40px;margin:-6px 0;
+  }
+  .rowbadges{margin-top:8px}
+  .mpraise{margin-top:8px;font-size:.72rem;line-height:1.5;color:var(--good)}
+  .streak.star{color:var(--good);border-color:rgba(15,107,69,.3);background:rgba(15,107,69,.08)}
+  .champ.bday{margin-bottom:0;font-size:.8rem}
   .pct{font-family:var(--mono);font-weight:700;font-size:1.45rem;text-align:right;color:var(--ink);padding-top:1px;max-width:150px}
   .pct small{display:block;font-weight:400;font-size:.56rem;color:var(--ink-faint);letter-spacing:.06em;line-height:1.45;margin-top:3px}
   .pct.leading{color:var(--good)}
@@ -293,6 +307,8 @@
       <button type="button" class="notif-btn" id="notifBtn" aria-label="Alerts">🔕</button>
     </div>
   </header>
+
+  <div class="champ bday" id="bdayBanner" hidden></div>
 
   <section class="card">
     <h2>Log weight</h2>
@@ -514,17 +530,19 @@ function urlB64ToUint8Array(base64String){
   $('when').addEventListener('change',updateTodayChip);
   updateTodayChip();
 
-  function confetti(){
+  function confetti(count,durSec){
+    count=count||26;
     const colors=['#f4f2ee','#1f3a5a','#7ddfa8','#e8b64c','#fff'];
-    for(let i=0;i<26;i++){
+    for(let i=0;i<count;i++){
       const c=document.createElement('div');
       c.className='cf';
       c.style.left=Math.random()*100+'vw';
       c.style.width=c.style.height=(6+Math.random()*6)+'px';
       c.style.background=colors[i%colors.length];
-      c.style.animationDelay=(Math.random()*.3)+'s';
+      c.style.animationDelay=(Math.random()*(durSec?.8:.3))+'s';
+      if(durSec)c.style.animationDuration=durSec+'s';
       document.body.appendChild(c);
-      setTimeout(()=>c.remove(),2100);
+      setTimeout(()=>c.remove(),durSec?durSec*1000+1000:2100);
     }
   }
 
@@ -639,6 +657,89 @@ function urlB64ToUint8Array(base64String){
     days.forEach(d=>{run=(prev!=null&&d===prev+1)?run+1:1;if(run>best)best=run;prev=d});
     return best;
   }
+  // ---------- humane streaks + guardrails (Phase 3) ----------
+  const BDAYS={jameel:'10-15',hibbu:'02-28',mom:'02-07'};
+  function thanksgivingOf(y){
+    const dow=new Date(y,10,1,12).getDay();          // weekday of Nov 1
+    const firstThu=1+((4-dow)+7)%7;
+    return y+'-11-'+String(firstThu+21).padStart(2,'0');
+  }
+  // grace days need no log and never count as a miss
+  function isGraceDay(who,dateStr){
+    const md=dateStr.slice(5);
+    if(BDAYS[who]===md)return true;
+    if(md==='01-01'||md==='07-04'||md==='12-25')return true;
+    return dateStr===thanksgivingOf(+dateStr.slice(0,4));
+  }
+  // Daily-log streak that forgives one missed day per rolling 7-day window
+  // (a second miss within 7 days resets) and skips grace days entirely.
+  function humaneStreak(who){
+    const logged=new Set(entries.filter(e=>e.who===who).map(e=>e.when));
+    if(!logged.size)return 0;
+    let minDay=Infinity;logged.forEach(s=>{const n=dayNum(s);if(n<minDay)minDay=n});
+    const iso=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+    const d=new Date(laTodayStr()+'T12:00:00');
+    // today isn't over yet — an unlogged, non-grace today is pending, not a miss
+    if(!logged.has(iso(d))&&!isGraceDay(who,iso(d)))d.setDate(d.getDate()-1);
+    let count=0;const misses=[];
+    for(;;){
+      const key=iso(d), dn=dayNum(key);
+      if(dn<minDay)break;
+      if(logged.has(key))count++;
+      else if(!isGraceDay(who,key)){
+        if(misses.some(m=>m-dn<=6))break;   // second miss inside a 7-day window
+        misses.push(dn);                     // streak-freeze: forgive this one
+      }
+      d.setDate(d.getDate()-1);
+    }
+    return count;
+  }
+  // every non-grace day of the calendar month has a log
+  function perfectMonth(who,month){
+    const logged=new Set(entries.filter(e=>e.who===who).map(e=>e.when));
+    if(!logged.size)return false;
+    const last=lastDayOf(month);
+    for(let day=1;;day++){
+      const key=month+'-'+String(day).padStart(2,'0');
+      if(key>last)break;
+      if(isGraceDay(who,key))continue;
+      if(!logged.has(key))return false;
+    }
+    return true;
+  }
+  // average trend loss in lb/week over the last two weeks (null if <15 days)
+  function paceLb2wk(who){
+    const tr=computeTrend(who);
+    if(!tr||tr.series.length<15)return null;
+    const s=tr.series;
+    return (s[s.length-15].trend-s[s.length-1].trend)/2;
+  }
+  function atOrBelowFloor(who){
+    const fl=floorLb(who), t=trendToday(who);
+    return fl!=null&&t!=null&&t<=fl;
+  }
+  const chipKey=(key,who)=>'pomona-chip:'+key+':'+who;
+  function chipDismissed(key,who){
+    try{
+      const v=localStorage.getItem(chipKey(key,who));
+      return v!=null&&dayNum(laTodayStr())-(+v)<7;
+    }catch(e){return false}
+  }
+  function dismissChip(key,who){
+    try{localStorage.setItem(chipKey(key,who),String(dayNum(laTodayStr())))}catch(e){}
+  }
+  // warm, non-diagnostic nudges; each dismissible for ~7 days per person
+  function guardChips(who){
+    const chips=[];
+    const t=trendToday(who), fl=floorLb(who), p=getProfile(who), s=score30(who);
+    const pace=paceLb2wk(who);
+    if(pace!=null&&pace>1.75)chips.push({key:'pace',text:'Fast drops are mostly water — steady 1–2 lb a week is the kind that stays gone.'});
+    if(fl!=null&&t!=null&&t-fl<=5)chips.push({key:'floor',text:'You\'re close to a healthy floor for your height — this is a great time to switch to Maintaining \u{1F6E1} and hold steady.'});
+    if(p&&p.birthYear&&(new Date().getFullYear()-p.birthYear)>=70)chips.push({key:'age',text:'At our best, slow and steady wins — a little protein and some light strength work keeps you strong while the number drifts down. No rush. \u{1F49B}'});
+    if(s&&s.score>0&&!isMaintaining(who))chips.push({key:'protein',text:'Tip: protein at each meal + a little strength work keeps muscle while you lose. \u{1F4AA}'});
+    return chips.filter(c=>!chipDismissed(c.key,who));
+  }
+
   // On first open in a new month, snapshot the just-finished season's winner
   // into comp/data.seasons (whole-doc write via push)
   let seasonCheckDone=false;
@@ -683,11 +784,7 @@ function urlB64ToUint8Array(base64String){
         rateWk=-slope*7/base.wt*100;
       }
     }
-    const days=new Set(list.map(e=>e.when));
-    let streak=0, d=new Date();
-    const iso=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
-    if(!days.has(iso(d))) d.setDate(d.getDate()-1);
-    while(days.has(iso(d))){streak++;d.setDate(d.getDate()-1)}
+    const streak=humaneStreak(id);
     const spanDays=dayNum(cur.when)-dayNum(base.when);
     return {list,base,cur,pct:(base.wt-cur.wt)/base.wt*100,trend,trendPct,slope,rateWk,streak,spanDays};
   }
@@ -725,6 +822,14 @@ function urlB64ToUint8Array(base64String){
   });
 
   // ---------- log entry ----------
+  const LOG_TOASTS=[
+    'Logged. Go get it, <Name>. 💪',
+    'Another day on the board! 🎉',
+    'That\'s the good stuff — trend\'s got your back, <Name>.',
+    'Boom. Logged. See you tomorrow. ⚖️',
+    'Nice one, <Name>. Consistency is the whole game.',
+    'On the board! The family sees you. 👀🔥'
+  ];
   $('add').addEventListener('click',()=>{
     const who=selectedWho, when=$('when').value, wt=parseFloat($('wt').value);
     const msg=$('msg');
@@ -738,19 +843,16 @@ function urlB64ToUint8Array(base64String){
     push().then(()=>notifyOthers(who,wt)).catch(()=>{});
     maybeBackfillStartWt(who);
     $('wt').value='';
+    msg.textContent='';
     const now=personData(who);
     const name=PEOPLE.find(p=>p.id===who).name;
-    let text='Logged. Nice work, '+name+'.';
-    if(prevPct!==null&&now&&Math.floor(now.pct)>Math.floor(prevPct)&&now.pct>0){
-      text=name+' just crossed '+Math.floor(now.pct)+'% — milestone! 🏆';
+    // at or below the healthy floor we stop celebrating further loss
+    if(prevPct!==null&&now&&Math.floor(now.pct)>Math.floor(prevPct)&&now.pct>0&&!atOrBelowFloor(who)){
+      showToast('🏆 '+name+' just crossed '+Math.floor(now.pct)+'% — milestone!');
       confetti();
-    }else if(now&&now.streak>=3){
-      text='Logged — '+now.streak+' days straight, '+name+'. Consistency wins this.';
-    }else if(now&&now.list.length>1&&now.cur.wt<now.list[now.list.length-2].wt){
-      text='Logged — trending down. Keep going, '+name+'.';
+    }else{
+      showToast(LOG_TOASTS[Math.floor(Math.random()*LOG_TOASTS.length)].replace(/<Name>/g,name));
     }
-    msg.textContent=text;msg.style.color='var(--good)';
-    setTimeout(()=>{msg.textContent=''},3500);
     render();
   });
 
@@ -779,16 +881,18 @@ function urlB64ToUint8Array(base64String){
       const div=document.createElement('div');
       const isFirst=r.rank===1;
       div.className='row'+(isFirst?' first':'');
-      let sub=r.name+' hasn\'t logged yet — nudge them. 😊', subWrap=' wrap', safety='', streakBadge='';
+      let sub=r.name+' hasn\'t logged yet — nudge them. 😊', subWrap=' wrap', streakBadge='', starBadge='';
       if(r.d){
         subWrap='';
         sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' · '+fmtDate(r.d.cur.when);
         if(r.d.streak>=2)streakBadge='<span class="streak">🔥 '+r.d.streak+'d</span>';
-        if(r.d.rateWk!==null&&r.d.spanDays>=7&&r.d.rateWk>1.4){
-          safety='<div class="safety">Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Steady is what sticks.</div>';
-        }
+        if(perfectMonth(r.id,prevMonthOf(laTodayStr().slice(0,7))))starBadge='<div class="rowbadges"><span class="streak star">Perfect month ⭐</span></div>';
         sub+=spark(r.d);
       }
+      const praise=r.maint?'<div class="mpraise">Holding steady — that\'s a win every single day.</div>':'';
+      const gchips=guardChips(r.id).map(c=>
+        '<div class="gchip" data-key="'+c.key+'" data-who="'+r.id+'"><span>'+c.text+'</span>'+
+        '<button type="button" class="gx" aria-label="Dismiss this tip">✕</button></div>').join('');
       let pctCell;
       if(r.maint){
         const band=bandStatus(r.id);
@@ -808,7 +912,7 @@ function urlB64ToUint8Array(base64String){
         '<div class="rank">'+rankTxt+'</div>'+
         '<div class="who"><div class="name">'+r.name+streakBadge+'</div></div>'+
         pctCell+
-        '<div class="detail"><div class="sub'+subWrap+'">'+sub+'</div>'+safety+'</div>';
+        '<div class="detail"><div class="sub'+subWrap+'">'+sub+'</div>'+starBadge+praise+gchips+'</div>';
       board.appendChild(div);
     });
 
@@ -904,6 +1008,30 @@ function urlB64ToUint8Array(base64String){
     else{el.hidden=true}
   }
 
+  let birthdayCelebrated=false;
+  function renderBirthday(){
+    const md=laTodayStr().slice(5);
+    const names=PEOPLE.filter(p=>BDAYS[p.id]===md).map(p=>p.name);
+    const el=$('bdayBanner');
+    if(!names.length){el.hidden=true;return}
+    el.textContent='🎂 Happy Birthday, '+names.join(' & ')+'! The whole family\'s cheering for you today.';
+    el.hidden=false;
+    if(!birthdayCelebrated){
+      birthdayCelebrated=true;
+      confetti(90,3.2); // bigger, longer burst than the milestone one
+    }
+  }
+
+  // dismiss guardrail chips (per person, remembered ~7 days)
+  $('board').addEventListener('click',e=>{
+    const x=e.target.closest('.gx');
+    if(!x)return;
+    const chip=x.closest('.gchip');
+    if(!chip)return;
+    dismissChip(chip.dataset.key,chip.dataset.who);
+    render();
+  });
+
   // ---------- profiles (Phase 1) ----------
   let pmWho=null, pmSex=null;
   const pmask=$('pmask');
@@ -952,7 +1080,7 @@ function urlB64ToUint8Array(base64String){
     profiles[who]=Object.assign({},profiles[who]||{},profile);
     if(profilesRef)profilesRef.set({[who]:profile},{merge:true}).catch(()=>{});
     closeProfileModal();
-    showToast('Saved. Welcome aboard \u{1F389}');
+    showToast('Saved. You\'re all set. \u{1F389}');
   });
   // startWt auto-fills from the first logged entry; if the profile was saved
   // before any weigh-in existed, fill it in on the first one
@@ -1074,6 +1202,7 @@ function urlB64ToUint8Array(base64String){
   }
 
   renderEra();
+  renderBirthday();
   render();
   syncPushState();
 })();
