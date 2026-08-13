@@ -207,6 +207,53 @@
   .ex .xnote{font-size:.78rem;color:var(--ink-soft);margin-top:7px;line-height:1.55}
   .stake{margin-top:12px;padding:12px 15px;border-radius:13px;background:rgba(31,58,90,.08);border:1px solid rgba(31,58,90,.25);color:var(--shadow);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
 
+  /* profile setup modal — large type (1rem = 22px) and >=44px tap targets */
+  .pmask{
+    position:fixed;inset:0;z-index:120;
+    background:rgba(31,58,90,.45);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    display:flex;align-items:flex-end;justify-content:center;
+    padding:16px;
+  }
+  .pmask[hidden]{display:none}
+  @media (min-width:480px){.pmask{align-items:center}}
+  .pmodal{
+    width:100%;max-width:420px;max-height:calc(100dvh - 32px);overflow-y:auto;
+    background:var(--cream);color:var(--ink);
+    border:1px solid rgba(244,242,238,.55);border-radius:24px;
+    box-shadow:0 24px 60px -20px rgba(31,58,90,.7);
+    padding:24px 20px calc(20px + env(safe-area-inset-bottom));
+  }
+  .pmodal h3{font-family:var(--serif);font-weight:600;font-size:1.3rem;margin-bottom:16px}
+  .pm-field{margin-bottom:16px}
+  .pm-field>label{display:block;font-weight:600;font-size:1rem;margin-bottom:8px}
+  .pm-sex{display:flex;gap:10px}
+  .sexbtn{
+    flex:1;min-height:56px;border-radius:16px;cursor:pointer;
+    border:1px solid rgba(43,42,40,.14);background:#fff;color:var(--ink);
+    font-family:var(--sans);font-weight:600;font-size:1rem;
+  }
+  .sexbtn:active{transform:scale(.98)}
+  .sexbtn.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .pm-height{display:flex;align-items:center;gap:8px}
+  .pm-height input{flex:1;min-width:0}
+  .pm-height span{font-family:var(--mono);font-size:1rem;color:var(--ink-soft);flex:none}
+  .pm-privacy{font-size:1rem;line-height:1.5;color:var(--ink-soft);margin:2px 0 14px}
+  .pm-msg{font-weight:600;font-size:.88rem;color:var(--bad);text-align:center;min-height:1.3em;margin-bottom:6px}
+  .pm-save{
+    width:100%;min-height:58px;cursor:pointer;
+    font-family:var(--mono);font-weight:500;font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream);background:var(--ink);border:none;border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(31,58,90,.6);
+  }
+  .pm-save:active{transform:scale(.98)}
+  .pm-skip{
+    width:100%;min-height:52px;cursor:pointer;margin-top:10px;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);background:rgba(255,255,255,.65);border:1px solid rgba(43,42,40,.14);border-radius:999px;
+  }
+  .pm-skip:active{transform:scale(.98)}
+
   .cf{position:fixed;top:-12px;border-radius:2px;pointer-events:none;z-index:99;animation:fall 1.6s ease-in forwards}
   @keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
   @media (prefers-reduced-motion:reduce){.row .bar{transition:none}.cf{display:none}}
@@ -275,6 +322,38 @@
 
 </div>
 
+<div class="pmask" id="pmask" hidden>
+  <div class="pmodal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <h3 id="pmTitle">Quick setup 👋</h3>
+    <div class="pm-field">
+      <label id="pmSexLabel">You are:</label>
+      <div class="pm-sex" role="radiogroup" aria-labelledby="pmSexLabel">
+        <button type="button" class="sexbtn" data-sex="F">Woman</button>
+        <button type="button" class="sexbtn" data-sex="M">Man</button>
+      </div>
+    </div>
+    <div class="pm-field">
+      <label for="pmFeet">Your height:</label>
+      <div class="pm-height">
+        <input type="number" id="pmFeet" inputmode="numeric" min="3" max="7" placeholder="5" aria-label="Height, feet"><span>ft</span>
+        <input type="number" id="pmInch" inputmode="numeric" min="0" max="11" placeholder="4" aria-label="Height, inches"><span>in</span>
+      </div>
+    </div>
+    <div class="pm-field">
+      <label for="pmYear">Birth year:</label>
+      <input type="number" id="pmYear" inputmode="numeric" min="1900" placeholder="1970">
+    </div>
+    <div class="pm-field">
+      <label for="pmGoal">Goal weight (lb):</label>
+      <input type="number" id="pmGoal" inputmode="decimal" step="0.1" min="50" max="700" placeholder="150">
+    </div>
+    <p class="pm-privacy">This is stored in the app's shared database and visible to the family.</p>
+    <div class="pm-msg" id="pmMsg" aria-live="polite"></div>
+    <button type="button" class="pm-save" id="pmSave">Save</button>
+    <button type="button" class="pm-skip" id="pmSkip">Skip for now</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -313,7 +392,9 @@ function urlB64ToUint8Array(base64String){
   const PEOPLE=[{id:'jameel',name:'Jameel'},{id:'hibbu',name:'Hibbu'},{id:'mom',name:'Mom'}];
   const END=new Date(2026,7,7);
   let entries=[];
-  let docRef=null, subsRef=null, applyingRemote=false;
+  let docRef=null, subsRef=null, profilesRef=null, applyingRemote=false;
+  let profiles={}, profilesLoaded=false;
+  const profileSkipped={}; // per-session skip — resets next open
   const LOG_RECENT=10;
   let logExpanded=false;
 
@@ -349,6 +430,12 @@ function urlB64ToUint8Array(base64String){
         db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
         docRef=db.collection('comp').doc('data');
         subsRef=db.collection('comp').doc('subs');
+        profilesRef=db.collection('comp').doc('profiles');
+        profilesRef.onSnapshot(snap=>{
+          profiles=snap.exists?(snap.data()||{}):{};
+          profilesLoaded=true;
+          maybeOfferProfileSetup();
+        },()=>{});
         docRef.onSnapshot(snap=>{
           if(snap.exists){
             applyingRemote=true;
@@ -406,17 +493,77 @@ function urlB64ToUint8Array(base64String){
     }
   }
 
+  // ---------- scoring engine (Phase 1) ----------
+  const laTodayStr=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles'}).format(new Date());
+  // Daily EWMA trend per person: keep only the last entry per calendar day,
+  // carry raw weight forward over gap days, smooth with alpha=0.1.
+  // Returns {series:[{when,raw,trend}], byDate:{when:trend}, first, last} or null.
+  function computeTrend(who){
+    const list=entries.filter(e=>e.who===who&&typeof e.wt==='number').slice().sort((a,b)=>a.when<b.when?-1:1);
+    if(!list.length)return null;
+    const byDay={};
+    list.forEach(e=>{byDay[e.when]=e.wt}); // stable sort → latest entry per day wins
+    const end=laTodayStr();
+    const series=[], byDate={};
+    const iso=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+    const d=new Date(list[0].when+'T12:00:00');
+    let raw=null, t=null, guard=0;
+    for(let key=iso(d); key<=end&&guard<5000; d.setDate(d.getDate()+1),key=iso(d),guard++){
+      raw=(key in byDay)?byDay[key]:raw;   // carry previous day's raw weight forward
+      t=(t==null)?raw:0.1*raw+0.9*t;       // EWMA: T[n] = 0.1*M[n] + 0.9*T[n-1]
+      series.push({when:key,raw:raw,trend:t});
+      byDate[key]=t;
+    }
+    if(!series.length)return null;
+    return {series,byDate,first:series[0].when,last:series[series.length-1].when};
+  }
+  // Rolling-30-day score: % of trend weight lost since 30 days ago.
+  // Positive = losing, ~0 = maintaining, negative = gaining.
+  // Cold start: uses earliest trend point and flags warmingUp until 30 full days exist.
+  function score30(who){
+    const tr=computeTrend(who);
+    if(!tr)return null;
+    const s=tr.series, cur=s[s.length-1];
+    const warmingUp=s.length<31;
+    const ref=warmingUp?s[0]:s[s.length-31];
+    const score=(Math.round((ref.trend-cur.trend)/ref.trend*1000)/10)||0;
+    return {score, display:(score>=0?'+':'')+score.toFixed(1)+'%', warmingUp, refDate:ref.when, days:s.length};
+  }
+  function getProfile(who){return profiles&&profiles[who]&&typeof profiles[who]==='object'?profiles[who]:null}
+  function trendToday(who){
+    const tr=computeTrend(who);
+    return tr?tr.series[tr.series.length-1].trend:null;
+  }
+  function isMaintaining(who){
+    const p=getProfile(who), t=trendToday(who);
+    return !!(p&&p.goalWt!=null&&t!=null&&Math.abs(t-p.goalWt)<=2);
+  }
+  function bandStatus(who){
+    const p=getProfile(who), t=trendToday(who);
+    if(!p||p.goalWt==null||t==null)return null;
+    if(Math.abs(t-p.goalWt)<=2)return 'in band';
+    return t<p.goalWt?'under band':'over band';
+  }
+  function floorLb(who){
+    const p=getProfile(who);
+    if(!p||!p.heightIn)return null;
+    return 18.5*p.heightIn*p.heightIn/703;
+  }
+  window.PomonaEngine={computeTrend,score30,isMaintaining,bandStatus,floorLb,getProfile,openProfileSetup};
+
   // ---------- data helpers ----------
   const dayNum=s=>Math.floor(new Date(s+'T12:00:00')/86400000);
   function personData(id){
     const list=entries.filter(e=>e.who===id);
     if(!list.length)return null;
     const base=list[0], cur=list[list.length-1];
-    const trend=list.map((e,i)=>{
-      const d0=dayNum(e.when);
-      const win=list.filter(x=>{const d=dayNum(x.when);return d<=d0&&d>d0-7});
-      return {when:e.when, wt:win.reduce((s,x)=>s+x.wt,0)/win.length};
-    });
+    // dotted line: 7-day moving average over the daily carried-forward series
+    const daily=computeTrend(id);
+    const trend=daily?daily.series.map((p,i,arr)=>{
+      const from=Math.max(0,i-6);
+      let s=0;for(let j=from;j<=i;j++)s+=arr[j].raw;
+      return {when:p.when, wt:s/(i-from+1)};
+    }):list.map(e=>({when:e.when,wt:e.wt}));
     const trendNow=trend[trend.length-1].wt;
     const trendPct=(base.wt-trendNow)/base.wt*100;
     let slope=null, rateWk=null;
@@ -468,6 +615,7 @@ function urlB64ToUint8Array(base64String){
     b.addEventListener('click',()=>{
       selectedWho=b.dataset.who;
       pills.forEach(x=>x.classList.toggle('on',x===b));
+      maybeOfferProfileSetup();
     });
   });
 
@@ -483,6 +631,7 @@ function urlB64ToUint8Array(base64String){
     entries.push({who,when,wt});
     entries.sort((a,b)=>a.when<b.when?-1:1);
     push().then(()=>notifyOthers(who,wt)).catch(()=>{});
+    maybeBackfillStartWt(who);
     $('wt').value='';
     const now=personData(who);
     const name=PEOPLE.find(p=>p.id===who).name;
@@ -598,6 +747,68 @@ function urlB64ToUint8Array(base64String){
   function updateCountdown(){
     const days=Math.max(0,Math.ceil((END-new Date())/86400000));
     $('countdown').textContent=days+' days left';
+  }
+
+  // ---------- profiles (Phase 1) ----------
+  let pmWho=null, pmSex=null;
+  const pmask=$('pmask');
+  function maybeOfferProfileSetup(){
+    if(!profilesLoaded||!selectedWho)return;
+    if(getProfile(selectedWho)||profileSkipped[selectedWho])return;
+    if(!pmask.hidden)return;
+    openProfileSetup(selectedWho);
+  }
+  function openProfileSetup(who){
+    const person=PEOPLE.find(p=>p.id===who);
+    if(!person)return;
+    pmWho=who;
+    const p=getProfile(who)||{};
+    $('pmTitle').textContent='Quick setup, '+person.name+' \u{1F44B}';
+    pmSex=p.sex||null;
+    updateSexButtons();
+    $('pmFeet').value=p.heightIn?Math.floor(p.heightIn/12):'';
+    $('pmInch').value=p.heightIn?(p.heightIn%12):'';
+    $('pmYear').value=p.birthYear||'';
+    $('pmGoal').value=p.goalWt||'';
+    $('pmMsg').textContent='';
+    pmask.hidden=false;
+  }
+  function updateSexButtons(){
+    document.querySelectorAll('.sexbtn').forEach(b=>b.classList.toggle('on',b.dataset.sex===pmSex));
+  }
+  document.querySelectorAll('.sexbtn').forEach(b=>{
+    b.addEventListener('click',()=>{pmSex=b.dataset.sex;updateSexButtons()});
+  });
+  function closeProfileModal(){pmask.hidden=true;pmWho=null}
+  $('pmSkip').addEventListener('click',()=>{
+    if(pmWho)profileSkipped[pmWho]=true;
+    closeProfileModal();
+  });
+  $('pmSave').addEventListener('click',()=>{
+    const msg=$('pmMsg');
+    const feet=parseInt($('pmFeet').value,10), inch=parseInt($('pmInch').value||'0',10);
+    const year=parseInt($('pmYear').value,10), goal=parseFloat($('pmGoal').value);
+    if(!pmSex){msg.textContent='Tap Woman or Man first.';return}
+    if(isNaN(feet)||feet<3||feet>7||isNaN(inch)||inch<0||inch>11){msg.textContent='Enter a real height.';return}
+    if(isNaN(year)||year<1900||year>new Date().getFullYear()){msg.textContent='Enter a 4-digit birth year.';return}
+    if(isNaN(goal)||goal<50||goal>700){msg.textContent='Enter a real goal weight.';return}
+    const who=pmWho, d=personData(who);
+    const profile={sex:pmSex,heightIn:feet*12+inch,birthYear:year,goalWt:goal,startWt:d?d.base.wt:null};
+    profiles[who]=Object.assign({},profiles[who]||{},profile);
+    if(profilesRef)profilesRef.set({[who]:profile},{merge:true}).catch(()=>{});
+    closeProfileModal();
+    showToast('Saved. Welcome aboard \u{1F389}');
+  });
+  // startWt auto-fills from the first logged entry; if the profile was saved
+  // before any weigh-in existed, fill it in on the first one
+  function maybeBackfillStartWt(who){
+    if(!profilesRef||!profilesLoaded)return;
+    const p=getProfile(who);
+    if(!p||p.startWt!=null)return;
+    const d=personData(who);
+    if(!d)return;
+    profiles[who]=Object.assign({},p,{startWt:d.base.wt});
+    profilesRef.set({[who]:{startWt:d.base.wt}},{merge:true}).catch(()=>{});
   }
 
   // ---------- web push ----------
