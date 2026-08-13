@@ -1,7 +1,7 @@
 {
-  "name": "Weight Loss Competition",
-  "short_name": "Weight Loss",
-  "description": "3-week family weight loss competition tracker",
+  "name": "Matin Family",
+  "short_name": "Matin Family",
+  "description": "The Matin family fat-loss game — steady, kind, and a little competitive.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

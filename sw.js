@@ -1,4 +1,4 @@
-const CACHE = 'pomona-cut-v29';
+const CACHE = 'pomona-cut-v30';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -16,7 +16,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('push', e => {
   let data = {};
   try { data = e.data ? e.data.json() : {}; } catch (err) {}
-  e.waitUntil(self.registration.showNotification(data.title || 'pomona-cut', {
+  e.waitUntil(self.registration.showNotification(data.title || 'Matin Family', {
     body: data.body || '',
     icon: data.icon || '/pomona-cut/icon-192.png',
     data: { url: data.url || '/pomona-cut/' }

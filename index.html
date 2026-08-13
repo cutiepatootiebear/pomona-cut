@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#3f6fa3">
-<title>Weight Loss Competition</title>
-<meta property="og:title" content="Weight Loss Competition">
-<meta property="og:description" content="3 weeks. One scale. Most % lost wins.">
+<title>Matin Family</title>
+<meta property="og:title" content="Matin Family">
+<meta property="og:description" content="The Matin family fat-loss game — steady, kind, and a little competitive.">
 <meta property="og:image" content="https://cutiepatootiebear.github.io/pomona-cut/og-image.jpg">
 <meta property="og:url" content="https://cutiepatootiebear.github.io/pomona-cut/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Matin Family">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -60,7 +61,13 @@
 
   .wrap{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 
-  header{padding:8px 4px 4px;text-align:left}
+  header{padding:8px 4px 4px;text-align:left;display:flex;flex-direction:column;gap:10px}
+  h1{
+    font-family:var(--serif);font-weight:600;font-size:1.9rem;line-height:1.08;
+    color:var(--cream);letter-spacing:-.01em;
+    text-shadow:0 2px 24px rgba(31,58,90,.45);
+  }
+  h1 em{font-style:italic;font-weight:500}
   /* chips + alerts button share one row that must fit 390px phones — sizes are tight on purpose */
   .dates{display:flex;flex-wrap:nowrap;align-items:center;gap:6px}
   .pill{
@@ -102,15 +109,21 @@
   .streak{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;white-space:nowrap;color:var(--warn);border:1px solid rgba(138,90,31,.35);background:rgba(232,182,76,.18);border-radius:999px;padding:2px 8px}
   .detail{grid-column:2/-1}
   .sub{font-family:var(--mono);font-size:min(.85rem,4.5vw);color:var(--ink-soft);margin-top:2px;white-space:nowrap}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .chip{display:inline-block;font-family:var(--mono);font-size:.62rem;padding:4px 10px;border-radius:999px;border:1px solid rgba(43,42,40,.14);color:var(--ink-soft);background:rgba(255,255,255,.5)}
-  .chip.down{color:var(--good);border-color:rgba(15,107,69,.3);background:rgba(15,107,69,.08)}
-  .chip.up{color:var(--bad);border-color:rgba(163,69,47,.3);background:rgba(163,69,47,.08)}
+  .sub.wrap{white-space:normal;line-height:1.5}
   .safety{margin-top:9px;font-size:.76rem;line-height:1.5;color:var(--warn);background:rgba(232,182,76,.16);border:1px solid rgba(138,90,31,.3);border-radius:12px;padding:9px 11px}
   .spark{margin-top:8px;display:block}
-  .pct{font-family:var(--mono);font-weight:700;font-size:1.45rem;text-align:right;color:var(--ink);padding-top:1px}
-  .pct small{display:block;font-weight:400;font-size:.56rem;color:var(--ink-faint);letter-spacing:.14em;margin-top:3px}
+  .pct{font-family:var(--mono);font-weight:700;font-size:1.45rem;text-align:right;color:var(--ink);padding-top:1px;max-width:150px}
+  .pct small{display:block;font-weight:400;font-size:.56rem;color:var(--ink-faint);letter-spacing:.06em;line-height:1.45;margin-top:3px}
   .pct.leading{color:var(--good)}
+  .warm{display:block;font-family:var(--mono);font-weight:400;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px}
+  .mbadge{display:inline-block;font-family:var(--mono);font-weight:500;font-size:.64rem;letter-spacing:.03em;color:var(--good);border:1px solid rgba(15,107,69,.3);background:rgba(15,107,69,.08);border-radius:999px;padding:5px 10px;white-space:nowrap}
+  .champ{
+    margin-bottom:12px;font-family:var(--mono);font-size:.74rem;line-height:1.55;
+    color:var(--shadow);background:rgba(232,182,76,.22);
+    border:1px solid rgba(138,90,31,.32);border-radius:13px;padding:10px 13px;
+  }
+  .shrow{font-family:var(--mono);font-size:.7rem;line-height:1.5;color:var(--ink-soft);padding:8px 12px;background:rgba(255,255,255,.5);border:1px solid rgba(43,42,40,.1);border-radius:12px}
+  .shist{display:flex;flex-direction:column;gap:8px}
 
   /* form */
   .form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -205,7 +218,9 @@
   .ex .xr{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:.7rem;padding:3px 0}
   .ex .xr b{white-space:nowrap}
   .ex .xnote{font-size:.78rem;color:var(--ink-soft);margin-top:7px;line-height:1.55}
-  .stake{margin-top:12px;padding:12px 15px;border-radius:13px;background:rgba(31,58,90,.08);border:1px solid rgba(31,58,90,.25);color:var(--shadow);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+  .rules ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+  .rules li{position:relative;padding-left:20px;line-height:1.6}
+  .rules li::before{content:'•';position:absolute;left:4px;color:var(--ink-faint)}
 
   /* profile setup modal — large type (1rem = 22px) and >=44px tap targets */
   .pmask{
@@ -272,8 +287,9 @@
 <div class="wrap">
 
   <header>
+    <h1>Matin <em>Family</em></h1>
     <div class="dates">
-      <span class="pill" id="countdown">— days left</span>
+      <span class="pill" id="eraLine" hidden></span>
       <button type="button" class="notif-btn" id="notifBtn" aria-label="Alerts">🔕</button>
     </div>
   </header>
@@ -294,24 +310,32 @@
 
   <section class="card">
     <h2>Leaderboard</h2>
+    <div class="champ" id="champBanner" hidden></div>
     <div class="board" id="board"></div>
   </section>
 
   <section class="card">
-    <h2>Rules</h2>
+    <h2>Family records 🏅</h2>
+    <div class="ex" id="records"></div>
+  </section>
+
+  <section class="card" id="seasonCard" hidden>
+    <h2>Season history</h2>
+    <div class="shist" id="seasonHist"></div>
+  </section>
+
+  <section class="card">
+    <h2>How Matin Family works</h2>
     <div class="rules">
-      <p><b>The basics.</b> Weigh in whenever you have time, as often as you like. Your first weigh-in becomes your starting weight. Whoever loses the biggest <b>% of their own starting weight</b> by <b>Aug 7</b> wins.</p>
-      <p><b>What "% lost" means.</b> Nothing fancy — it's how much you lost compared to where <b>you</b> started. Lose 2 lb from 200 lb, that's 1%. Lose 2 lb from 100 lb, that's 2% — same pounds, but a bigger bite out of a smaller body.</p>
-      <p><b>Why not just count pounds?</b> Bigger bodies drop pounds faster — they burn more calories doing everything, even sleeping. If we counted raw pounds, the biggest person would win on autopilot. % makes the same effort worth the same score at every size.</p>
-      <p><b>Example — same effort, fair fight.</b> Two people work equally hard and each lose 5% of themselves:</p>
-      <div class="ex">
-        <div class="xr"><span>Starts 220 lb, loses 11 lb</span><b>−5%</b></div>
-        <div class="xr"><span>Starts 140 lb, loses 7 lb</span><b>−5%</b></div>
-        <div class="xnote">11 lb vs 7 lb — and it's a tie. Both lost the same slice of themselves. That's the whole idea.</div>
-      </div>
-      <p><b>What 1% means for each of us</b> — from your real starting weights:</p>
-      <div class="ex" id="onepct"></div>
-      <div class="stake">Winner gets $100 from each loser.</div>
+      <ul>
+        <li>Log your weight whenever you weigh in. Once a day is plenty.</li>
+        <li>We don't score single days — daily 1–3 lb bounces are just water, salt, and sleep. We score your 30-day trend line, so the number is honest.</li>
+        <li>Positive % = trend heading down. That's the win.</li>
+        <li>Nobody eats under 1,200 calories. This is a game, not a crash diet.</li>
+        <li>Hit your goal? You switch to Maintaining 🛡 — staying in your zone counts as a win, every day.</li>
+        <li>Steady 1–2 lb a week is the kind that stays gone.</li>
+        <li>Be kind in the group. We're all on the same team.</li>
+      </ul>
     </div>
   </section>
 
@@ -389,9 +413,10 @@ function urlB64ToUint8Array(base64String){
 
 (function(){
   const KEY='pomona-cut-v1';
+  const SKEY='pomona-cut-seasons';
   const PEOPLE=[{id:'jameel',name:'Jameel'},{id:'hibbu',name:'Hibbu'},{id:'mom',name:'Mom'}];
-  const END=new Date(2026,7,7);
   let entries=[];
+  let seasons=[];
   let docRef=null, subsRef=null, profilesRef=null, applyingRemote=false;
   let profiles={}, profilesLoaded=false;
   const profileSkipped={}; // per-session skip — resets next open
@@ -399,10 +424,14 @@ function urlB64ToUint8Array(base64String){
   let logExpanded=false;
 
   try{entries=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){entries=[]}
+  try{seasons=JSON.parse(localStorage.getItem(SKEY))||[]}catch(e){seasons=[]}
   // migrate old "sister" id → hibbu
   entries=entries.map(e=>e.who==='sister'?{...e,who:'hibbu'}:e);
   const $=id=>document.getElementById(id);
-  const cache=()=>{try{localStorage.setItem(KEY,JSON.stringify(entries))}catch(e){}};
+  const cache=()=>{try{
+    localStorage.setItem(KEY,JSON.stringify(entries));
+    localStorage.setItem(SKEY,JSON.stringify(seasons));
+  }catch(e){}};
 
   // ---------- Firebase sync ----------
   // All Firestore access is gated behind anonymous auth: docRef/subsRef stay
@@ -440,8 +469,10 @@ function urlB64ToUint8Array(base64String){
           if(snap.exists){
             applyingRemote=true;
             entries=(snap.data().entries||[]).map(e=>e.who==='sister'?{...e,who:'hibbu'}:e).sort((a,b)=>a.when<b.when?-1:1);
+            seasons=Array.isArray(snap.data().seasons)?snap.data().seasons:[];
             cache();render();
             applyingRemote=false;
+            maybeSnapshotSeason();
           }else if(entries.length){push().catch(()=>{})}
         },()=>{});
         runCleanup();
@@ -452,7 +483,11 @@ function urlB64ToUint8Array(base64String){
   function push(){
     cache();
     if(docRef && !applyingRemote){
-      return docRef.set({entries, updated:Date.now()});
+      // whole-doc write; merge keeps `seasons` intact when this client
+      // hasn't received it yet (fresh install writing before first snapshot)
+      const doc={entries, updated:Date.now()};
+      if(seasons.length)doc.seasons=seasons;
+      return docRef.set(doc,{merge:true});
     }
     return Promise.resolve();
   }
@@ -549,7 +584,77 @@ function urlB64ToUint8Array(base64String){
     if(!p||!p.heightIn)return null;
     return 18.5*p.heightIn*p.heightIn/703;
   }
-  window.PomonaEngine={computeTrend,score30,isMaintaining,bandStatus,floorLb,getProfile,openProfileSetup};
+
+  // ---------- seasons (Phase 2) ----------
+  // A season = one calendar month. Sept 2026 = Season 1 ... Aug 2028 = Season 24.
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ERA_START='2026-09', ERA_END='2028-08';
+  function seasonNum(month){ // 'YYYY-MM' → 1..24 or null outside the era
+    const p=month.split('-'), n=(+p[0]-2026)*12+(+p[1]-9)+1;
+    return n>=1&&n<=24?n:null;
+  }
+  function prevMonthOf(month){
+    let y=+month.slice(0,4), m=+month.slice(5,7)-1;
+    if(m<1){m=12;y--}
+    return y+'-'+String(m).padStart(2,'0');
+  }
+  function lastDayOf(month){
+    const y=+month.slice(0,4), m=+month.slice(5,7);
+    return month+'-'+String(new Date(y,m,0).getDate()).padStart(2,'0');
+  }
+  function monthLabel(month){return MONTHS[+month.slice(5,7)-1]+' '+month.slice(0,4)}
+  const eraOver=()=>laTodayStr().slice(0,7)>ERA_END;
+  function trendAsOf(who,dateStr){
+    const tr=computeTrend(who);
+    return tr&&tr.byDate[dateStr]!=null?tr.byDate[dateStr]:null;
+  }
+  // 30-day trend score as of an arbitrary past date (cold start: earliest point)
+  function scoreAsOf(who,dateStr){
+    const tr=computeTrend(who);
+    if(!tr)return null;
+    const cur=tr.byDate[dateStr];
+    if(cur==null)return null;
+    const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()-30);
+    const refStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const ref=tr.byDate[refStr]!=null?tr.byDate[refStr]:tr.byDate[tr.first];
+    return (Math.round((ref-cur)/ref*1000)/10)||0;
+  }
+  // Best 30-day trend % standing at that month's close; people already in
+  // their maintenance band at month end aren't competing for the trophy.
+  function seasonWinnerFor(month){
+    const lastDay=lastDayOf(month);
+    let best=null;
+    PEOPLE.forEach(p=>{
+      const score=scoreAsOf(p.id,lastDay);
+      if(score==null)return;
+      const prof=getProfile(p.id), t=trendAsOf(p.id,lastDay);
+      if(prof&&prof.goalWt!=null&&t!=null&&Math.abs(t-prof.goalWt)<=2)return;
+      if(!best||score>best.score)best={who:p.id,name:p.name,score:score};
+    });
+    return best;
+  }
+  function longestStreak(who){
+    const days=[...new Set(entries.filter(e=>e.who===who).map(e=>e.when))].map(dayNum).sort((a,b)=>a-b);
+    let best=0,run=0,prev=null;
+    days.forEach(d=>{run=(prev!=null&&d===prev+1)?run+1:1;if(run>best)best=run;prev=d});
+    return best;
+  }
+  // On first open in a new month, snapshot the just-finished season's winner
+  // into comp/data.seasons (whole-doc write via push)
+  let seasonCheckDone=false;
+  function maybeSnapshotSeason(){
+    if(seasonCheckDone||!docRef||applyingRemote)return;
+    seasonCheckDone=true;
+    const month=prevMonthOf(laTodayStr().slice(0,7));
+    if(seasonNum(month)==null)return;
+    if(seasons.some(s=>s.month===month))return;
+    const best=seasonWinnerFor(month);
+    if(!best)return;
+    seasons.push({season:seasonNum(month),name:best.name,score:best.score,month:month});
+    seasons.sort((a,b)=>a.season-b.season);
+    push().catch(()=>{});
+  }
+  window.PomonaEngine={computeTrend,score30,scoreAsOf,isMaintaining,bandStatus,floorLb,getProfile,seasonNum,seasonWinnerFor,longestStreak,openProfileSetup};
 
   // ---------- data helpers ----------
   const dayNum=s=>Math.floor(new Date(s+'T12:00:00')/86400000);
@@ -651,68 +756,68 @@ function urlB64ToUint8Array(base64String){
 
   // ---------- render ----------
   function render(){
-    const rows=PEOPLE.map(p=>({...p,d:personData(p.id)}));
+    const rows=PEOPLE.map(p=>({...p,d:personData(p.id),s:score30(p.id),maint:isMaintaining(p.id)}));
     rows.sort((a,b)=>{
-      if(!a.d&&!b.d)return 0;
-      if(!a.d)return 1;
-      if(!b.d)return -1;
-      return b.d.pct-a.d.pct;
+      if(!a.s&&!b.s)return 0;
+      if(!a.s)return 1;
+      if(!b.s)return -1;
+      return b.s.score-a.s.score;
     });
-    // competition ranking: ties (same displayed %) share a rank shown as "T-n", next rank skips
+    // competition ranking among scoring rows (maintainers sit out); ties share a rank
+    const scored=rows.filter(r=>r.s&&!r.maint);
     let prevKey=null,rank=0;
-    rows.forEach((r,i)=>{
-      if(!r.d){r.rank=null;return}
-      const key=r.d.pct.toFixed(2);
+    scored.forEach((r,i)=>{
+      const key=r.s.score.toFixed(1);
       if(key!==prevKey){rank=i+1;prevKey=key}
       r.rank=rank;
     });
     const rankCounts={};
-    rows.forEach(r=>{if(r.rank!==null)rankCounts[r.rank]=(rankCounts[r.rank]||0)+1});
-    const maxPct=Math.max(.001,...rows.map(r=>r.d?r.d.pct:0));
+    scored.forEach(r=>{rankCounts[r.rank]=(rankCounts[r.rank]||0)+1});
+    const maxScore=Math.max(.001,...scored.map(r=>r.s.score));
     const board=$('board');board.innerHTML='';
-    rows.forEach((r,i)=>{
+    rows.forEach(r=>{
       const div=document.createElement('div');
       const isFirst=r.rank===1;
       div.className='row'+(isFirst?' first':'');
-      let sub='no weigh-ins yet', chips='', safety='', streakBadge='';
+      let sub=r.name+' hasn\'t logged yet — nudge them. 😊', subWrap=' wrap', safety='', streakBadge='';
       if(r.d){
+        subWrap='';
         sub=r.d.base.wt.toFixed(1)+' → '+r.d.cur.wt.toFixed(1)+' · '+fmtDate(r.d.cur.when);
         if(r.d.streak>=2)streakBadge='<span class="streak">🔥 '+r.d.streak+'d</span>';
-        const c=[];
-        c.push('<span class="chip">trend −'+Math.max(0,r.d.trendPct).toFixed(2)+'%</span>');
-        if(r.d.list.length>1){
-          const prev=r.d.list[r.d.list.length-2];
-          const ch=r.d.cur.wt-prev.wt;
-          c.push('<span class="chip '+(ch<=0?'down':'up')+'">'+(ch<=0?'▼ ':'▲ +')+Math.abs(ch).toFixed(1)+' lb</span>');
-        }
-        chips='<div class="chips">'+c.join('')+'</div>';
         if(r.d.rateWk!==null&&r.d.spanDays>=7&&r.d.rateWk>1.4){
-          safety='<div class="safety">Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Slow and steady still wins on Aug 7.</div>';
+          safety='<div class="safety">Pace check: trending faster than ~1% of bodyweight per week. Great drive — make sure you\'re eating enough and drinking water. Steady is what sticks.</div>';
         }
         sub+=spark(r.d);
       }
-      const pctTxt=r.d?((r.d.pct>=0?'−':'+')+Math.abs(r.d.pct).toFixed(2)+'%'):'·';
-      const rankTxt=r.rank===null?'–':(rankCounts[r.rank]>1?'<span class="tie">Tie</span>':r.rank);
+      let pctCell;
+      if(r.maint){
+        const band=bandStatus(r.id);
+        const bandTxt=band==='under band'?'A touch under':band==='over band'?'A touch over':'Right in the zone';
+        pctCell='<div class="pct"><span class="mbadge">🛡 Maintaining</span><small>'+bandTxt+'</small></div>';
+      }else if(r.s){
+        pctCell='<div class="pct'+(isFirst?' leading':'')+'">'+r.s.display+
+          '<small>lost this month (30-day trend)</small>'+
+          (r.s.warmingUp?'<span class="warm">warming up</span>':'')+'</div>';
+      }else{
+        pctCell='<div class="pct">·</div>';
+      }
+      const rankTxt=r.maint?'🛡':(r.rank?(rankCounts[r.rank]>1?'<span class="tie">Tie</span>':r.rank):'–');
+      const barW=(!r.maint&&r.s&&r.s.score>0)?Math.max(0,r.s.score/maxScore*100):0;
       div.innerHTML=
-        '<div class="bar" style="width:'+(r.d&&r.d.pct>0?Math.max(0,r.d.pct/maxPct*100):0)+'%"></div>'+
+        '<div class="bar" style="width:'+barW+'%"></div>'+
         '<div class="rank">'+rankTxt+'</div>'+
         '<div class="who"><div class="name">'+r.name+streakBadge+'</div></div>'+
-        '<div class="pct'+(isFirst?' leading':'')+'">'+pctTxt+'<small>LOST</small></div>'+
-        '<div class="detail"><div class="sub">'+sub+'</div>'+chips+safety+'</div>';
+        pctCell+
+        '<div class="detail"><div class="sub'+subWrap+'">'+sub+'</div>'+safety+'</div>';
       board.appendChild(div);
     });
 
-    // personalized "1% = X lb" rows in Rules, from real baselines
-    const one=$('onepct');
-    const oneRows=PEOPLE.map(p=>{
-      const d=rows.find(r=>r.id===p.id).d;
-      if(!d)return '<div class="xr"><span>'+p.name+' — weigh in once and this fills in</span></div>';
-      return '<div class="xr"><span>'+p.name+': started '+d.base.wt.toFixed(1)+' lb</span><b>1% = '+(d.base.wt/100).toFixed(1)+' lb</b></div>';
-    }).join('');
-    one.innerHTML=oneRows+'<div class="xnote">So if we each lose our own 1%, we\'re dead even — no matter whose pounds were bigger. Beat the others\' % and you win.</div>';
+    renderChampBanner(scored);
+    renderRecords();
+    renderSeasons();
 
     const log=$('log');log.innerHTML='';
-    if(!entries.length){log.innerHTML='<div class="empty">No weigh-ins yet. Baseline morning: all three on the scale, back to back.</div>';return}
+    if(!entries.length){log.innerHTML='<div class="empty">No weigh-ins yet — be the first on the board! ⚖️</div>';return}
     const all=[...entries].reverse();
     const shown=logExpanded?all:all.slice(0,LOG_RECENT);
     shown.forEach(e=>{
@@ -744,9 +849,59 @@ function urlB64ToUint8Array(base64String){
     }
   }
 
-  function updateCountdown(){
-    const days=Math.max(0,Math.ceil((END-new Date())/86400000));
-    $('countdown').textContent=days+' days left';
+  function renderChampBanner(scored){
+    const el=$('champBanner');
+    if(eraOver()){
+      el.textContent='That\'s a wrap on our 2-year run. 🎉 Time to look back, celebrate, and set the next chapter together.';
+      el.hidden=false;
+      return;
+    }
+    const n=seasonNum(laTodayStr().slice(0,7));
+    const leader=scored&&scored[0];
+    if(n&&leader&&leader.s.score>0){
+      el.textContent='🏆 '+leader.name+' is leading Season '+n+' of 24';
+      el.hidden=false;
+    }else{
+      el.hidden=true;
+    }
+  }
+
+  function renderRecords(){
+    let bm=null;seasons.forEach(s=>{if(!bm||s.score>bm.score)bm=s});
+    let ls=null;PEOPLE.forEach(p=>{const v=longestStreak(p.id);if(v>0&&(!ls||v>ls.v))ls={name:p.name,v:v}});
+    let ml=null;PEOPLE.forEach(p=>{
+      const tr=computeTrend(p.id);
+      if(!tr)return;
+      const prof=getProfile(p.id);
+      const list=entries.filter(e=>e.who===p.id).sort((a,b)=>a.when<b.when?-1:1);
+      const start=(prof&&prof.startWt!=null)?prof.startWt:(list.length?list[0].wt:null);
+      if(start==null)return;
+      const lost=start-tr.series[tr.series.length-1].trend;
+      if(!ml||lost>ml.v)ml={name:p.name,v:lost};
+    });
+    $('records').innerHTML=
+      '<div class="xr"><span>Biggest month</span><b>'+(bm?bm.name+' · '+(bm.score>=0?'lost ':'gained ')+Math.abs(bm.score).toFixed(1)+'%':'—')+'</b></div>'+
+      '<div class="xr"><span>Longest&nbsp;streak&nbsp;🔥</span><b>'+(ls?ls.name+' · '+ls.v+(ls.v===1?' day':' days'):'—')+'</b></div>'+
+      '<div class="xr"><span>Most lost since day one</span><b>'+(ml?ml.name+' · '+ml.v.toFixed(1)+' lb':'—')+'</b></div>';
+  }
+
+  function renderSeasons(){
+    const card=$('seasonCard');
+    if(!seasons.length){card.hidden=true;return}
+    card.hidden=false;
+    $('seasonHist').innerHTML=[...seasons].sort((a,b)=>b.season-a.season).map(s=>
+      '<div class="shrow">Season '+s.season+' · '+monthLabel(s.month)+' · 🏆 '+s.name+' · '+(s.score>=0?'lost ':'gained ')+Math.abs(s.score).toFixed(1)+'%</div>'
+    ).join('');
+  }
+
+  function renderEra(){
+    const el=$('eraLine');
+    const m=laTodayStr().slice(0,7);
+    if(eraOver()){el.hidden=true;return}
+    const n=seasonNum(m);
+    if(n){el.textContent='Season '+n+' of 24';el.hidden=false}
+    else if(m<ERA_START){el.textContent='Season 1 of 24 starts Sept 2026';el.hidden=false}
+    else{el.hidden=true}
   }
 
   // ---------- profiles (Phase 1) ----------
@@ -902,7 +1057,7 @@ function urlB64ToUint8Array(base64String){
       return fetch(PUSH_WORKER_URL,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({title:'Family Weight Loss',body:name+' logged '+wt.toFixed(1)+' lb',url:'/pomona-cut/',subscriptions:subs})
+        body:JSON.stringify({title:'Matin Family',body:name+' logged '+wt.toFixed(1)+' lb',url:'/pomona-cut/',subscriptions:subs})
       }).then(r=>r.json()).then(res=>{
         if(!res||!Array.isArray(res.stale)||!res.stale.length)return;
         const del={};
@@ -918,7 +1073,7 @@ function urlB64ToUint8Array(base64String){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
 
-  updateCountdown();
+  renderEra();
   render();
   syncPushState();
 })();
